@@ -26,3 +26,5 @@ unique(Macrofauna$Taxa)
 unique(Macrofauna$Stage)
 str(Yield)
 
+#Delete non-predators from Macrofauna data
+Aquatic_predators <- Macrofauna
