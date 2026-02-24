@@ -1,0 +1,181 @@
+Date;Field;Treatment;Taxa;Abundance;Observations
+2025-06-30;1;BE;Chironomidae;196;
+2025-06-30;1;BE;S. fonscolombii;2;
+2025-06-30;1;FC;Chironomidae;104;
+2025-06-30;1;FC;S. fonscolombii;4;
+2025-06-30;1;FE;Chironomidae;172;
+2025-06-30;1;FE;L. oryzophilus;1;
+2025-06-30;1;FE;S. fonscolombii;2;
+2025-06-30;1;FO;Chironomidae;91;
+2025-06-30;2;BE;Chironomidae;896;
+2025-06-30;2;FC;Chironomidae;134;
+2025-06-30;2;FC;I. elegans;2;
+2025-06-30;2;FC;S. fonscolombii;20;
+2025-06-30;2;FE;Chironomidae;572;
+2025-06-30;2;FE;S. fonscolombii;1;
+2025-06-30;2;FO;Chironomidae;772;
+2025-06-30;2;FO;S. fonscolombii;4;
+2025-06-30;3;BE;Chironomidae;101;
+2025-06-30;3;BE;S. fonscolombii;5;
+2025-06-30;3;FC;Chironomidae;348;
+2025-06-30;3;FE;Chironomidae;292;
+2025-06-30;3;FE;S. fonscolombii;5;
+2025-06-30;3;FO;Chironomidae;101;
+2025-06-30;3;FO;I. elegans;1;
+2025-06-30;3;FO;S. fonscolombii;2;
+2025-06-30;4;BE;Chironomidae;91;
+2025-06-30;4;BE;S. fonscolombii;1;
+2025-06-30;4;FC;Chironomidae;352;
+2025-06-30;4;FE;Chironomidae;160;
+2025-06-30;4;FO;Chironomidae;150;
+2025-06-30;5;BE;Chironomidae;324;
+2025-06-30;5;FC;Chironomidae;186;
+2025-06-30;5;FE;Chironomidae;36;Bote con muy poca agua
+2025-06-30;5;FO;Chironomidae;258;
+2025-07-15;1;BE;Chironomidae;23;
+2025-07-15;1;BE;L. oryzophilus;14;
+2025-07-15;1;BE;S. fonscolombii;2;
+2025-07-15;1;FC;Chironomidae;57;
+2025-07-15;1;FC;L. oryzophilus;18;
+2025-07-15;1;FC;S. fonscolombii;1;
+2025-07-15;1;FE;Chironomidae;104;
+2025-07-15;1;FE;I. elegans;2;
+2025-07-15;1;FE;L. oryzophilus;3;
+2025-07-15;1;FE;S. fonscolombii;1;
+2025-07-15;1;FO;Chironomidae;43;
+2025-07-15;1;FO;I. elegans;1;
+2025-07-15;1;FO;L. oryzophilus;3;
+2025-07-15;1;FO;S. fonscolombii;1;
+2025-07-15;2;BE;Chironomidae;13;
+2025-07-15;2;BE;I. elegans;3;
+2025-07-15;2;BE;S. fonscolombii;4;
+2025-07-15;2;FC;Chironomidae;34;
+2025-07-15;2;FC;I. elegans;6;
+2025-07-15;2;FC;L. oryzophilus;1;
+2025-07-15;2;FC;S. fonscolombii;2;
+2025-07-15;2;FE;Chironomidae;12;
+2025-07-15;2;FE;I. elegans;4;
+2025-07-15;2;FE;L. oryzophilus;35;
+2025-07-15;2;FO;Chironomidae;57;
+2025-07-15;2;FO;I. elegans;2;
+2025-07-15;2;FO;L. oryzophilus;15;
+2025-07-15;2;FO;S. fonscolombii;2;
+2025-07-15;3;BE;Chironomidae;46;
+2025-07-15;3;BE;I. elegans;1;
+2025-07-15;3;BE;L. oryzophilus;30;
+2025-07-15;3;BE;S. fonscolombii;5;
+2025-07-15;3;FC;Chironomidae;52;
+2025-07-15;3;FC;L. oryzophilus;7;
+2025-07-15;3;FC;S. fonscolombii;5;
+2025-07-15;3;FE;Chironomidae;89;
+2025-07-15;3;FE;L. oryzophilus;10;
+2025-07-15;3;FE;S. fonscolombii;6;
+2025-07-15;3;FO;Chironomidae;48;
+2025-07-15;3;FO;L. oryzophilus;32;
+2025-07-15;3;FO;S. fonscolombii;7;
+2025-07-15;4;BE;Chironomidae;10;
+2025-07-15;4;BE;L. oryzophilus;1;
+2025-07-15;4;BE;S. fonscolombii;1;
+2025-07-15;4;FC;Chironomidae;65;
+2025-07-15;4;FC;L. oryzophilus;10;
+2025-07-15;4;FC;S. fonscolombii;5;
+2025-07-15;4;FE;Chironomidae;41;
+2025-07-15;4;FE;L. oryzophilus;1;
+2025-07-15;4;FE;S. fonscolombii;3;
+2025-07-15;4;FO;Chironomidae;24;
+2025-07-15;4;FO;S. fonscolombii;2;
+2025-07-15;5;BE;Chironomidae;56;
+2025-07-15;5;BE;S. fonscolombii;4;
+2025-07-15;5;FC;Chironomidae;11;
+2025-07-15;5;FC;I. elegans;2;
+2025-07-15;5;FC;L. oryzophilus;4;
+2025-07-15;5;FC;S. fonscolombii;3;
+2025-07-15;5;FE;Chironomidae;53;
+2025-07-15;5;FE;L. oryzophilus;7;
+2025-07-15;5;FE;S. fonscolombii;5;
+2025-07-15;5;FO;Chironomidae;72;
+2025-07-15;5;FO;L. oryzophilus;6;
+2025-07-15;5;FO;S. fonscolombii;3;
+2025-07-30;1;BE;L. oryzophilus;53;
+2025-07-30;1;FC;Aeshnidae;2;
+2025-07-30;1;FC;L. oryzophilus;24;
+2025-07-30;1;FE;L. oryzophilus;7;
+2025-07-30;1;FO;Chironomidae;6;
+2025-07-30;1;FO;I. elegans;1;
+2025-07-30;1;FO;L. oryzophilus;1;
+2025-07-30;2;BE;I. elegans;3;
+2025-07-30;2;BE;L. oryzophilus;4;
+2025-07-30;2;FC;;;Vacio
+2025-07-30;2;FE;L. oryzophilus;10;
+2025-07-30;2;FO;Chironomidae;1;
+2025-07-30;2;FO;I. elegans;3;
+2025-07-30;2;FO;L. oryzophilus;1;
+2025-07-30;3;BE;Chironomidae;1;
+2025-07-30;3;BE;I. elegans;1;
+2025-07-30;3;BE;L. oryzophilus;113;
+2025-07-30;3;FC;L. oryzophilus;10;
+2025-07-30;3;FE;L. oryzophilus;43;
+2025-07-30;3;FO;L. oryzophilus;52;
+2025-07-30;4;BE;Chironomidae;2;
+2025-07-30;4;BE;L. oryzophilus;1;
+2025-07-30;4;FC;L. oryzophilus;17;
+2025-07-30;4;FE;Chironomidae;1;
+2025-07-30;4;FE;L. oryzophilus;2;
+2025-07-30;4;FO;L. oryzophilus;2;
+2025-07-30;5;BE;L. oryzophilus;3;
+2025-07-30;5;FC;Aeshnidae;1;
+2025-07-30;5;FC;Chironomidae;1;
+2025-07-30;5;FC;L. oryzophilus;107;
+2025-07-30;5;FE;L. oryzophilus;26;
+2025-07-30;5;FO;Aeshnidae;1;Larva
+2025-07-30;5;FO;L. oryzophilus;44;
+2025-08-12;1;BE;Aeshnidae;1;Adulto + Exuvia
+2025-08-12;1;BE;L. oryzophilus;48;
+2025-08-12;1;FC;Chironomidae;3;
+2025-08-12;1;FC;L. oryzophilus;24;
+2025-08-12;1;FE;L. oryzophilus;14;
+2025-08-12;1;FO;;;Vacio
+2025-08-12;2;BE;L. oryzophilus;1;
+2025-08-12;2;FC;;;Vacio, hay pequeña abertura en el triangulo
+2025-08-12;2;FE;L. oryzophilus;26;
+2025-08-12;2;FO;L. oryzophilus;2;
+2025-08-12;3;BE;Aeshnidae;1;Larva
+2025-08-12;3;BE;L. oryzophilus;70;
+2025-08-12;3;FC;L. oryzophilus;2;
+2025-08-12;3;FE;L. oryzophilus;30;
+2025-08-12;3;FO;L. oryzophilus;70;
+2025-08-12;4;BE;Chironomidae;8;
+2025-08-12;4;FC;L. oryzophilus;17;
+2025-08-12;4;FC;S. fonscolombii;1;
+2025-08-12;4;FE;Chironomidae;3;
+2025-08-12;4;FE;L. oryzophilus;1;
+2025-08-12;4;FO;L. oryzophilus;1;
+2025-08-12;5;BE;I. elegans;1;
+2025-08-12;5;BE;L. oryzophilus;22;
+2025-08-12;5;FC;L. oryzophilus;102;
+2025-08-12;5;FE;L. oryzophilus;7;
+2025-08-12;5;FO;L. oryzophilus;123;
+2025-08-25;1;BE;I. elegans;1;
+2025-08-25;1;FC;;;Vacio
+2025-08-25;1;FE;;;Vacio
+2025-08-25;1;FO;;;Vacio
+2025-08-25;2;BE;;;Vacio
+2025-08-25;2;FC;;;Vacio
+2025-08-25;2;FE;;;Vacio
+2025-08-25;2;FO;;;Vacio
+2025-08-25;3;BE;;;Vacio
+2025-08-25;3;FC;L. oryzophilus;1;
+2025-08-25;3;FE;L. oryzophilus;1;
+2025-08-25;3;FO;L. oryzophilus;1;
+2025-08-25;4;BE;;;Vacio
+2025-08-25;4;FC;Aeshnidae;1;
+2025-08-25;4;FC;L. oryzophilus;5;
+2025-08-25;4;FE;S. fonscolombii;2;
+2025-08-25;4;FO;L. oryzophilus;1;
+2025-08-25;5;BE;;;Vacio
+2025-08-25;5;FC;L. oryzophilus;3;
+2025-08-25;5;FE;Chironomidae;1;
+2025-08-25;5;FE;I. elegans;1;
+2025-08-25;5;FE;L. oryzophilus;1;
+2025-08-25;5;FO;I. elegans;1;
+2025-08-25;5;FO;L. oryzophilus;12;
