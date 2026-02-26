@@ -1,18 +1,14 @@
 "Date";"Field";"Treatment";"Ganguil";"Taxa";"Stage";"Abundance"
-2025-06-10;"1";"FO";"A";NA;NA;NA
 2025-06-10;"1";"FC";"A";"Procambarus clarkii";"ALEV";1
 2025-06-10;"1";"BE";"A";"Procambarus clarkii";"ALEV";2
 2025-06-10;"1";"BE";"B";"Procambarus clarkii";"AD";1
-2025-06-10;"1";"FE";"A";NA;NA;NA
 2025-06-10;"1";"FE";"B";"Procambarus clarkii";"ALEV";1
 2025-06-10;"2";"FE";"A";"Procambarus clarkii";"ALEV";2
 2025-06-10;"2";"FE";"A";"Pelophylax perezi";"AD";1
-2025-06-10;"2";"FE";"B";NA;NA;NA
 2025-06-10;"2";"FC";"A";"Procambarus clarkii";"ALEV";1
 2025-06-10;"2";"FC";"A";"Pelophylax perezi";"RENAC";1
 2025-06-10;"2";"FC";"B";"Procambarus clarkii";"ALEV";3
 2025-06-10;"2";"BE";"A";"Procambarus clarkii";"ALEV";1
-2025-06-10;"2";"FO";"B";NA;NA;NA
 2025-06-10;"3";"FC";"A";"Procambarus clarkii";"ALEV";8
 2025-06-10;"3";"FC";"A";"Carassius sp";"AD";6
 2025-06-10;"3";"FC";"B";"Carassius sp";"AD";1
@@ -31,7 +27,6 @@
 2025-06-10;"3";"FO";"A";"Procambarus clarkii";"ALEV";3
 2025-06-10;"3";"FO";"B";"Procambarus clarkii";"AD";2
 2025-06-10;"3";"FO";"B";"Procambarus clarkii";"ALEV";1
-2025-06-10;"4";"FO";"A";NA;NA;NA
 2025-06-10;"4";"FO";"B";"Pelophylax perezi";"AD";1
 2025-06-10;"4";"FO";"B";"Procambarus clarkii";"AD";1
 2025-06-10;"4";"FO";"B";"Procambarus clarkii";"JUV";3
@@ -50,16 +45,12 @@
 2025-06-11;"5";"FC";"A";"Procambarus clarkii";"AD";2
 2025-06-11;"5";"FC";"A";"Procambarus clarkii";"ALEV";1
 2025-06-11;"5";"FC";"A";"Pelophylax perezi";"AD";1
-2025-06-11;"5";"FC";"B";NA;NA;NA
 2025-06-11;"5";"BE";"B";"Procambarus clarkii";"ALEV";10
 2025-06-11;"5";"FE";"A";"Procambarus clarkii";"AD";1
 2025-06-11;"5";"FE";"A";"Procambarus clarkii";"JUV";1
-2025-06-11;"5";"FE";"B";NA;NA;NA
 2025-06-11;"5";"FO";"A";"Procambarus clarkii";"AD";2
 2025-06-11;"5";"FO";"A";"Procambarus clarkii";"JUV";1
 2025-06-11;"5";"FO";"A";"Procambarus clarkii";"ALEV";1
-2025-06-11;"5";"FO";"B";NA;NA;NA
-2025-06-26;"1";"FO";"A";NA;NA;NA
 2025-06-26;"1";"FO";"B";"Pelophylax perezi";"AD";1
 2025-06-26;"1";"BE";"A";"Procambarus clarkii";"AD";1
 2025-06-26;"2";"FE";"A";"Procambarus clarkii";"ALEV";1

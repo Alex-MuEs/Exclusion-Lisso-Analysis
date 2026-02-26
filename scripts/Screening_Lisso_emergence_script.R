@@ -24,7 +24,6 @@ unique(Emergence$Taxa)
 #Delete non-Lissorhoptrus from Emergence data
 Lisso_abundance <- Emergence[Emergence$Taxa %in% c("L. oryzophilus"),]
 str(Lisso_abundance)
-distinct(Lisso_abundance, Field, Treatment)
 
 write.csv2(Lisso_abundance, "data/modified/Lisso_abundance.csv", row.names = FALSE)
 
