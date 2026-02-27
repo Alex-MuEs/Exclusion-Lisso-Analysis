@@ -24,8 +24,8 @@ write.csv2(Aquatic_predators, "data/modified/Aquatic_predators.csv", row.names =
 #Filtering data
 Aquatic_predators2 <- Aquatic_predators %>%
   filter(!is.na(Aquatic_predators$Taxa),
-         Stage != "RENAC")
-         #Date < "2025-06-30")
+         Stage != "RENAC",
+         Date < "2025-06-30")
 Aquatic_predators3 <- Aquatic_predators2 %>% 
   mutate(funct_group = case_when(
     Taxa %in% c("Pelophylax perezi", "Epidalea calamita") ~ "Amphibians",
