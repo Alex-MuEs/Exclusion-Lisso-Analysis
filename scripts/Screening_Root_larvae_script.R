@@ -1,4 +1,4 @@
-#Larvae abundance and root damage#
+#LARVAE ABUNDANCE AND ASSOCIATED ROOT DAMAGE#
 
 rm(list=ls())
 
@@ -173,3 +173,4 @@ ggplot(root_wide, aes(x = "", y = root_contribution)) +
        y = "Contribution of waterbirds to root weight (%)") +
   theme_bw() +
   coord_flip()
+
