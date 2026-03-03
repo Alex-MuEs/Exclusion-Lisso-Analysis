@@ -1,10 +1,11 @@
 #LISSO EMERGENCE#
 
 
-#Clean session before starting
-rm(list=ls())
-#clean console
+#Clear session
+rm(list = ls(all.names = TRUE))
 cat("\014")
+graphics.off()
+pacman::p_unload(pacman::p_loaded(), character.only = TRUE, force = TRUE)
 
 
 #Load libraries for screening the data

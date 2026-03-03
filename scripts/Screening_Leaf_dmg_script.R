@@ -1,6 +1,11 @@
 #LEAF DAMAGE#
 
-rm(list=ls())
+#Clear session
+rm(list = ls(all.names = TRUE))
+cat("\014")
+graphics.off()
+pacman::p_unload(pacman::p_loaded(), character.only = TRUE, force = TRUE)
+
 
 library(ggplot2)
 library(tidyverse)
@@ -38,7 +43,7 @@ ggplot(leaf_filt, aes(x = Field, y = Marks_5leaves)) +
   theme_bw()
 diagnose_outlier(leaf_filt, Marks_5leaves)
 
-#Filtrar observaciones con valor de Marks_5leaves mayor a 40
+#Filter observations with Marks_5leaves value higher than 40
 leaf_filt2 <- leaf_filt %>% 
   filter(Marks_5leaves <= 40)
 
@@ -129,3 +134,26 @@ ggplot(marks_wide, aes(x = "", y = marks_contribution)) +
        y = "Contribution of waterbirds to prevent feeding marks (%)") +
   theme_bw() +
   coord_flip()
+
+
+
+#Plot leaf damage per date
+ggplot(leaf_filt2, aes(x = Date, y = Leaves_dmg_10leaves, colour = Field)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ Field) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(title = "Leaves damaged out of 10 leaves over time by field",
+       x = "Date",
+       y = "Leaves damaged")
+
+ggplot(leaf_filt2, aes(x = Date, y = Marks_5leaves, colour = Field)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ Field) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(title = "Marks in 5 leaves over time by field",
+       x = "Date",
+       y = "Leaf marks")

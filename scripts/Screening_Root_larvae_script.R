@@ -1,6 +1,11 @@
 #LARVAE ABUNDANCE AND ASSOCIATED ROOT DAMAGE#
 
-rm(list=ls())
+#Clear session
+rm(list = ls(all.names = TRUE))
+cat("\014")
+graphics.off()
+pacman::p_unload(pacman::p_loaded(), character.only = TRUE, force = TRUE)
+
 
 library(ggplot2)
 library(tidyverse)
