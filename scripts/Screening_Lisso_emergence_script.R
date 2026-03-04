@@ -28,8 +28,11 @@ str(Lisso_abundance)
 
 write.csv2(Lisso_abundance, "data/modified/Lisso_abundance.csv", row.names = FALSE)
 
+Lisso_abundance <- read.csv2("data/modified/Lisso_abundance.csv") %>% 
+  mutate(Date = as.POSIXct(Date),
+         Field = as.character(Field))
 
-#Screening Lisso abundance data
+
 ########################################################################
 #Añadir una observacion con valor de abundacia 0 para las parcelas y tratamientos que no tienen observación en alguna de las fechas en los datos Lisso_abundance
 #Crear un data frame con todas las combinaciones de Field, Treatment y Date
@@ -43,19 +46,33 @@ Lisso_abundance_complete$Taxa[is.na(Lisso_abundance_complete$Taxa )] <- "L. oryz
 diagnose_outlier(Lisso_abundance_complete)
 plot_outlier(Lisso_abundance_complete)
 
+#Filter observations with Abundance > 90
+Lisso_abundance_complete <- Lisso_abundance_complete %>%
+  filter(Abundance < 90)
+
+#Mean abundance per field
+Lisso_abundance_complete %>% 
+  group_by(Field) %>%
+  summarise(Abundance_mean = mean(Abundance),
+            Abundance_sd = sd(Abundance))
+
+
+
 #Lisso abundance per field and per field & treatment
 
 ggplot(Lisso_abundance_complete, aes(x = Field, y = Abundance)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.1) + 
+  geom_jitter(width = 0.2, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
   theme_bw() +
   labs(title = "Lisso abundance by field",
        x = "Field",
        y = "Abundance")
 
 ggplot(Lisso_abundance_complete, aes(x = Treatment, y = Abundance, colour = Treatment)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2) + 
+  geom_jitter(width = 0.2, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
   facet_wrap(~ Field, scale = "free_y") +
   theme_bw() +
   labs(title = "Lisso abundance by treatment and field",
@@ -65,10 +82,54 @@ ggplot(Lisso_abundance_complete, aes(x = Treatment, y = Abundance, colour = Trea
 
 #Lisso abundance data per date
 
-ggplot(Lisso_abundance_complete, aes(x = Date, y = Abundance, colour = Field)) +
+ggplot(Lisso_abundance_complete, aes(x = Date, y = Abundance)) +
   geom_point() +
   geom_smooth() +
-  facet_wrap(~ Field) +
+  #facet_wrap(~ Field) +
+  theme_bw() +
+  ylim(0, max(Lisso_abundance$Abundance) + 5) +
+  labs(title = "Lisso abundance over time by field",
+       x = "Date",
+       y = "Abundance")
+
+
+
+
+############## Datos filtrados para tratamientos BE y FO ##############
+
+#Filter data for treatments BE and FO
+Lisso_abundance_filt <- Lisso_abundance_complete %>%
+  filter(Treatment %in% c("BE", "FO"))
+
+
+#Lisso abundance per field and per field & treatment
+
+ggplot(Lisso_abundance_filt, aes(x = Field, y = Abundance)) +
+  geom_jitter(width = 0.2, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
+  theme_bw() +
+  labs(title = "Lisso abundance by field",
+       x = "Field",
+       y = "Abundance")
+
+ggplot(Lisso_abundance_filt, aes(x = Treatment, y = Abundance)) +
+  geom_jitter(width = 0.2, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
+  facet_wrap(~ Field, scale = "free_y") +
+  theme_bw() +
+  labs(title = "Lisso abundance by treatment and field",
+       x = "Treatment",
+       y = "Abundance")
+
+
+#Lisso abundance data per date
+
+ggplot(Lisso_abundance_filt, aes(x = Date, y = Abundance)) +
+  geom_point() +
+  geom_smooth() +
+  #facet_wrap(~ Field) +
   theme_bw() +
   ylim(0, max(Lisso_abundance$Abundance) + 5) +
   labs(title = "Lisso abundance over time by field",

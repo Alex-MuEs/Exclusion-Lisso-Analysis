@@ -115,7 +115,7 @@ ggplot(root_larvae_filt, aes(x = Treatment, y = N_larvae)) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
   stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red")+
   facet_wrap(~Field)+
-  labs(title = "Larvae abundance per treatment",
+  labs(title = "Larvae abundance per treatment and field",
        x = "Treatment",
        y = "Abundance") +
   theme_bw()
@@ -126,7 +126,7 @@ ggplot(root_larvae_filt, aes(x = Treatment, y = Root_weight)) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
   stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red")+
   facet_wrap(~Field)+
-  labs(title = "Root weight per treatment",
+  labs(title = "Root weight per treatment and field",
        x = "Treatment",
        y = "Root weight") +
   theme_bw()

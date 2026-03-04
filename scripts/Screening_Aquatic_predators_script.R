@@ -22,6 +22,10 @@ unique(Aquatic_predators$Taxa)
 #Save new csv
 write.csv2(Aquatic_predators, "data/modified/Aquatic_predators.csv", row.names = FALSE)
 
+Aquatic_predators <- read.csv2("data/modified/Aquatic_predators.csv") %>% 
+  mutate(Date = as.POSIXct(Date),
+         Field = as.character(Field))
+
 #Filtering data
 Aquatic_predators2 <- Aquatic_predators %>%
   filter(!is.na(Aquatic_predators$Taxa),
@@ -43,8 +47,8 @@ Aquatic_predators_complete <- merge(all_combinations, Aquatic_predators3, by = c
 Aquatic_predators_complete$Abundance[is.na(Aquatic_predators_complete$Abundance )] <- 0
 
 
-
-ggplot(Aquatic_predators_complete, aes(x = Treatment, y = Abundance)) +
+#Plot aquatic predator abundance by functional group by treatment
+ggplot(Aquatic_predators_complete, aes(x = Treatment, y = Abundance, colour = Treatment)) +
   geom_jitter(width = 0.05, height = 0) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
   stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
@@ -54,11 +58,13 @@ ggplot(Aquatic_predators_complete, aes(x = Treatment, y = Abundance)) +
        y = "Abundance") +
   theme_bw()
 
+
 Aquatic_predators_complete %>% 
   group_by(funct_group, Treatment) %>%
   summarise(Abundance_media = mean(Abundance),
             Abundance_sd = sd(Abundance))
 
+#Plot aquatic predator abundance by functional group by treatment and field
 ggplot(Aquatic_predators_complete, aes(x = Treatment, y = Abundance)) +
   geom_jitter(width = 0.05, height = 0) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
@@ -69,6 +75,7 @@ ggplot(Aquatic_predators_complete, aes(x = Treatment, y = Abundance)) +
        y = "Abundance") +
   theme_bw()
 
+#Plot aquatic predator abundance by functional group by field
 ggplot(Aquatic_predators_complete, aes(x = Field, y = Abundance)) +
   geom_jitter(width = 0.05, height = 0) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
