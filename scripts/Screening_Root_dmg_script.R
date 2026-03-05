@@ -116,10 +116,9 @@ diagnose_numeric(Root_20)
 diagnose_outlier(Root_20)
 plot_outlier(Root_20)
 
-#Filter data for treatments BE and FO, and root weights less than 2.5, as these are outliers in the data.
+#Filter data for treatments BE and FO
 root20_filt <- Root_20 %>%
-  filter(Treatment %in% c("BE", "FO"),
-         Root_weight < 2.5)
+  filter(Treatment %in% c("BE", "FO"))
 
 
 

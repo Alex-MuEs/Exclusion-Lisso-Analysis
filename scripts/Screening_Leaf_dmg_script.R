@@ -43,18 +43,6 @@ ggplot(leaf_filt, aes(x = Field, y = Marks_5leaves)) +
   theme_bw()
 diagnose_outlier(leaf_filt, Marks_5leaves)
 
-#Filter observations with Marks_5leaves value higher than 40
-leaf_filt2 <- leaf_filt %>% 
-  filter(Marks_5leaves <= 40)
-
-ggplot(leaf_filt2, aes(x = Field, y = Marks_5leaves)) +
-  geom_jitter(width = 0.05, height = 0) +
-  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
-  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red")+
-  labs(title = "Leaf marks in 5 leaves per field",
-       x = "Field",
-       y = "Leaf marks") +
-  theme_bw()
 
 #Relationship with Lisso abundance (emergence)?
 lisso_abundance <- read_csv2("data/modified/Lisso_abundance.csv")
@@ -73,7 +61,7 @@ ggplot(lisso_abundance, aes(x = Field, y = Abundance)) +
 
 
 #Plot leaf dmg per treatment
-ggplot(leaf_filt2, aes(x = Treatment, y = Leaves_dmg_10leaves)) +
+ggplot(leaf_filt, aes(x = Treatment, y = Leaves_dmg_10leaves)) +
   geom_jitter(width = 0.05, height = 0) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
   stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red")+
@@ -82,7 +70,7 @@ ggplot(leaf_filt2, aes(x = Treatment, y = Leaves_dmg_10leaves)) +
        y = "Leaves damaged") +
   theme_bw()
 
-ggplot(leaf_filt2, aes(x = Treatment, y = Marks_5leaves)) +
+ggplot(leaf_filt, aes(x = Treatment, y = Marks_5leaves)) +
   geom_jitter(width = 0.05, height = 0) +
   stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
   stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red")+
@@ -93,7 +81,7 @@ ggplot(leaf_filt2, aes(x = Treatment, y = Marks_5leaves)) +
 
 
 #Calculate the contribution of waterbirds to leaf damage
-leaf_summ <- leaf_filt2 %>% 
+leaf_summ <- leaf_filt %>% 
   group_by(Field, Treatment) %>% 
   summarise(mean_dmgleaves = mean(Leaves_dmg_10leaves, na.rm = TRUE),
             mean_marks = mean(Marks_5leaves, na.rm = TRUE))
@@ -138,7 +126,7 @@ ggplot(marks_wide, aes(x = "", y = marks_contribution)) +
 
 
 #Plot leaf damage per date
-ggplot(leaf_filt2, aes(x = Date, y = Leaves_dmg_10leaves, colour = Field)) +
+ggplot(leaf_filt, aes(x = Date, y = Leaves_dmg_10leaves, colour = Field)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~ Field) +
@@ -148,7 +136,7 @@ ggplot(leaf_filt2, aes(x = Date, y = Leaves_dmg_10leaves, colour = Field)) +
        x = "Date",
        y = "Leaves damaged")
 
-ggplot(leaf_filt2, aes(x = Date, y = Marks_5leaves, colour = Field)) +
+ggplot(leaf_filt, aes(x = Date, y = Marks_5leaves, colour = Field)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~ Field) +
