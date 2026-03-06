@@ -84,7 +84,96 @@ ggplot(larvae_wide, aes(x = "", y = larvae_contribution)) +
 
 
 
+#Plot larvae abundance per date and field
+ggplot(larvae_filt, aes(x = Date, y = Abundance, colour = Field)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ Field) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(title = "Larvae abundance over time by field",
+       x = "Date",
+       y = "Abundance")
+
+#Plot larvae abundance per date and treatment
+ggplot(larvae_filt, aes(x = Date, y = Abundance, colour = Treatment)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ Field) +
+  theme_bw() +
+  #theme(legend.position = "none") +
+  labs(title = "Larvae abundance over time by field",
+       x = "Date",
+       y = "Abundance")
 
 
 
-########### Separate data by sampling method (core v. whole plant) ############
+
+
+
+
+########### Compare data by sampling method (core v. whole plant) ############
+
+#Filter data for core sampling method
+larvae_core <- larvae_filt %>% 
+  filter(Method == "Core")
+
+
+
+#Plot larvae abundance per field
+ggplot(larvae_core, aes(x = Field, y = Abundance)) +
+  geom_jitter(width = 0.2, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 2, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
+  labs(title = "Larvae abundance per Field",
+       x = "Field",
+       y = "Abundance") +
+  theme_bw()
+
+
+#Plot larvae abundance per treatment
+ggplot(larvae_core, aes(x = Treatment, y = Abundance)) +
+  geom_jitter(width = 0.2, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 2, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
+  labs(title = "Larvae abundance per Treatment",
+       x = "Treatment",
+       y = "Abundance") +
+  theme_bw()
+
+
+#Plot larvae abundance per treatment and field
+ggplot(larvae_core, aes(x = Treatment, y = Abundance)) +
+  geom_jitter(width = 0.2, height = 0) +
+  facet_wrap(~Field) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 2, color = "red") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
+  labs(title = "Larvae abundance per Treatment and Field",
+       x = "Treatment",
+       y = "Abundance") +
+  theme_bw()
+
+
+
+#Calculate the contribution of waterbirds to larvae abundance
+larvae_summ <- larvae_filt %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_larvae = mean(Abundance, na.rm = T))
+
+larvae_wide <- larvae_summ %>%
+  pivot_wider(
+    id_cols = c(Field),
+    names_from = Treatment,
+    values_from = mean_larvae
+  ) %>% 
+  mutate(larvae_contribution = (((BE-FO)/(BE)))*100)
+
+ggplot(larvae_wide, aes(x = "", y = larvae_contribution)) +
+  geom_point(size = 3, alpha = 0.5, colour = "steelblue") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 6, color = "darkred") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.01, color = "black") +
+  labs(x = "",
+       y = "Contribution of waterbirds to larvae control (%)") +
+  theme_bw() +
+  coord_flip()
