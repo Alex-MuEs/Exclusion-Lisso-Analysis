@@ -85,10 +85,10 @@ ggplot(larvae_wide, aes(x = "", y = larvae_contribution)) +
 
 
 #Plot larvae abundance per date and field
-ggplot(larvae_filt, aes(x = Date, y = Abundance, colour = Field)) +
-  geom_point() +
+ggplot(larvae_filt, aes(x = Date, y = Abundance)) +
+  geom_jitter() +
   geom_smooth() +
-  facet_wrap(~ Field) +
+  #facet_wrap(~ Field) +
   theme_bw() +
   theme(legend.position = "none") +
   labs(title = "Larvae abundance over time by field",
@@ -107,6 +107,41 @@ ggplot(larvae_filt, aes(x = Date, y = Abundance, colour = Treatment)) +
        y = "Abundance")
 
 
+
+########## Compare larvae abundance with adult abundance over time ##########
+
+# Cargar los datos
+lisso <- read.csv2("data/modified/Lisso_abundance.csv")
+larvae <- read.csv2("data/original/Larvae.csv")
+
+# Convertir fechas
+lisso$Date <- as.Date(lisso$Date)
+larvae$Date <- as.Date(larvae$Date)
+
+
+
+ggplot() +
+  geom_jitter(data = lisso, aes(x = Date, y = Abundance, color = "Adultos"), alpha = 0.4, size = 2, width = 0.7) +
+  geom_jitter(data = larvae, aes(x = Date, y = Abundance*10, color = "Larvas"), alpha = 0.4, size = 2, width = 0.7) +
+  geom_smooth(data = lisso, aes(x = Date, y = Abundance, color = "Adultos"), 
+              method = "loess", se = F) +
+  geom_smooth(data = larvae, aes(x = Date, y = Abundance*10, color = "Larvas"), 
+              method = "loess", se = F) +
+  scale_y_continuous(
+    name = "Abundancia adultos",
+    sec.axis = sec_axis(~./10, name = "Abundancia larvas")
+  ) +
+  labs(title = "Abundancia de larvas y adultos en el tiempo",
+       x = "Fecha",
+       color = "Estadio") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title.y = element_text(color = "#F8766D"),
+    axis.text.y = element_text(color = "#F8766D"),
+    axis.title.y.right = element_text(color = "#00BFC4"),
+    axis.text.y.right = element_text(color = "#00BFC4")
+  )
 
 
 
