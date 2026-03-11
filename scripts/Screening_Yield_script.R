@@ -30,13 +30,14 @@ yield_filt <- Yield %>%
 
 
 #Plot yield per field
-ggplot(yield_filt, aes(x = Field, y = Yield_kg.ha_HR14)) +
+ggplot(yield_filt, aes(x = Field, y = Yield_kg.ha_HR14, fill = Treatment, color = Treatment)) +
   geom_jitter(width = 0.05, height = 0) +
-  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
-  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
-  labs(title = "Yield per field",
-       x = "Field",
-       y = "Yield (kg/ha at 14% HR)") +
+  geom_jitter(width = 0.1) +
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 2.5, stroke = 1.5, color = "black") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
+  labs(title = "Producción por campo",
+       x = "",
+       y = "Producción (kg/ha a 14% HR)") +
   theme_bw()
 
 
