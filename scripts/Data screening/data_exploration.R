@@ -108,7 +108,22 @@ ggplot(yield_filt, aes(Treatment, `Yield_kg/ha_HR14`)) +
 
 yield_summ <- yield_filt %>% 
   group_by(Field, Treatment) %>% 
-  summarise(mean_yield = mean(`Yield_kg/ha_HR14`))
+  summarise(mean_yield = mean(`Yield_kg/ha_HR14`),
+            sd = sd(`Yield_kg/ha_HR14`, na.rm = TRUE),
+            n = sum(!is.na(`Yield_kg/ha_HR14`)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+yield_global <- yield_summ %>%
+  group_by(Treatment) %>%
+  summarise(
+    mean_global = mean(mean_yield, na.rm = TRUE),
+    sd_global = sd(mean_yield, na.rm = TRUE),
+    n = sum(!is.na(mean_yield)),
+    se_global = sd_global / sqrt(n),
+    .groups = "drop"
+  )
 
 yield_wide <- yield_summ %>%
   pivot_wider(
@@ -132,6 +147,85 @@ ggplot(yield_wide, aes(x = "", y = yield_contribution)) +
 
 
 t.test(yield_wide$FO, yield_wide$BE, paired = TRUE)
+
+
+yield_filt$Treatment <- factor(yield_filt$Treatment, levels = c("BE", "FO"))
+
+
+
+pd_jitter <- position_jitter(width = 0.07, height = 0)
+pd_dodge  <- position_dodge(width = 0.15)
+pal_cb <- c(
+  "#0072B2", # azul
+  "#D55E00", # rojo/naranja
+  "#009E73", # verde
+  "#CC79A7", # morado
+  "#E69F00"  # amarillo/naranja
+)
+
+
+ggplot() +
+  geom_jitter(
+    data = yield_filt,
+    aes(x = Treatment, y = `Yield_kg/ha_HR14`, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = yield_summ,
+    aes(x = Treatment, y = mean_yield, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  # geom_errorbar(
+  #   data = yield_summ,
+  #   aes(x = Treatment, ymin = mean_yield - se, ymax = mean_yield + se, color = as.factor(Field)),
+  #   width = 0.05, linewidth = 0.9
+  # ) +
+  geom_point(
+    data = yield_summ,
+    aes(x = Treatment, y = mean_yield, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  # -------- capa global encima --------
+geom_line(
+  data = yield_global,
+  aes(x = Treatment, y = mean_global, group = 1),
+  inherit.aes = FALSE,
+  linewidth = 1.6,
+  color = "black"
+) +
+  
+  geom_errorbar(
+    data = yield_global,
+    aes(x = Treatment,
+        ymin = mean_global - se_global,
+        ymax = mean_global + se_global,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = yield_global,
+    aes(x = Treatment, y = mean_global),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  labs(
+    x = "Birds",
+    y = "Yield (Kg/Ha)",
+  ) +
+  theme_minimal(base_size = 14)
+
 
 ################MESOFAUNA EFFECTS ###############
 
