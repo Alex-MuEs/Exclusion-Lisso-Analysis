@@ -1,11 +1,16 @@
 ######## Mixed models analysis ########
 ### Root biomass ###
 
+rm(list = ls())
+
 # Load packages
 library(tidyverse)
 library(glmmTMB)
 library(DHARMa)
 library(emmeans)
+library(performance)
+library(car)
+
 
 # Load data
 root <- read.csv2("data/original/Root_dmg_20.csv") %>% 
@@ -15,10 +20,11 @@ root <- read.csv2("data/original/Root_dmg_20.csv") %>%
         filter(Treatment %in% c("BE", "FO"))
 
 # Fit LMM
-model <- glmmTMB(Root_weight ~ Treatment + (1|Field), 
+model <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
                 data = root, 
                 family = gaussian)
 summary(model)
+r2(model)
 emmeans(model, pairwise ~ Treatment)
 
 emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
@@ -37,7 +43,7 @@ dharma <- simulateResiduals(model, plot = T)
 ### Same without field 5 data ###
 root_no5 <- root %>% filter(Field != "5")
 
-model_no5 <- glmmTMB(Root_weight ~ Treatment + (1|Field), 
+model_no5 <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
                 data = root_no5, 
                 family = gaussian)
 summary(model_no5)

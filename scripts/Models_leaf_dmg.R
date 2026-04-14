@@ -1,11 +1,16 @@
 ######## Mixed models analysis ########
 ### Leaf damage ###
 
+rm(list = ls())
+
 #Load libraries
 library(tidyverse)
 library(glmmTMB)
 library(DHARMa)
 library(emmeans)
+library(car)
+library(performance)
+
 
 
 #Load data
@@ -22,7 +27,10 @@ leaf_dmg <- leaf_dmg %>%
 #Paired t-test glmmTMB
 model <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + julian_day + (1|Field), data = leaf_dmg, family = binomial)
 summary(model)
+r2(model)
 emmeans(model, pairwise ~ Treatment)
+
+Anova(model)
 
 #Plot emmeans
 emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
@@ -45,6 +53,7 @@ leaf_dmg_no5 <- leaf_dmg %>% filter(Field != 5)
 
 model_no5 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + julian_day + (1|Field), data = leaf_dmg_no5, family = binomial)
 summary(model_no5)
+r2(model_no5)
 emmeans(model_no5, pairwise ~ Treatment)
 
 emm_no5<-as.data.frame(emmeans(model_no5, pairwise ~ Treatment)$emmeans)
