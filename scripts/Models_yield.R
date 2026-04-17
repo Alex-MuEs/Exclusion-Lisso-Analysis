@@ -23,6 +23,9 @@ Yield <- read_csv2("data/original/Yield.csv") %>%
 model <- glmmTMB(sqrt(`Yield_kg/ha_HR14`) ~ Treatment + (1|Field), data = Yield, family = gaussian)
 summary(model)
 r2(model)
+
+Anova(model)
+
 emmeans(model, pairwise ~ Treatment)
 
 yield_emm <- as.data.frame(emmeans(model, pairwise ~Treatment)$emmeans)
@@ -43,6 +46,9 @@ Yield_no5 <- Yield %>%
 model_no5 <- glmmTMB(sqrt(`Yield_kg/ha_HR14`) ~ Treatment + (1|Field), data = Yield_no5, family = gaussian)
 summary(model_no5)
 r2(model_no5)
+
+Anova(model_no5)
+
 emmeans(model_no5, pairwise ~ Treatment)
 
 yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment)$emmeans)
