@@ -59,3 +59,12 @@ filter(Birds, Scientific == "Larus michahellis") %>%
   geom_point() +
   theme_bw() +
   labs(x = "Field", y = "Abundance Index", title = "Larus michahellis abundance index per field")
+
+
+
+#Plot abundance index per field with a facet per scientific
+ggplot(data = Birds, aes(x = Field, y = Abundance_Index)) +
+  geom_point() +
+  facet_wrap(~Scientific, scales = "free_y") +
+  theme_bw() +
+  labs(x = "Field", y = "Abundance Index", title = "Abundance index per field of every species")
