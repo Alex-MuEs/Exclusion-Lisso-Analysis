@@ -22,7 +22,7 @@ PhCh <- read.csv2("data/original/Physicochemical.csv") %>%
 
 
 
-#Assesing differences between treatments
+##### Assesing differences between treatments #####
 
 #Soil_cond per treatment and field
 ggplot(PhCh, aes(x = Treatment, y = Soil_cond)) +
@@ -91,7 +91,7 @@ ggplot(PhCh, aes(x = Treatment, y = pH)) +
 
 
 
-#Assessing differences in field 5#
+###### Assessing differences in field 5 ####
 
 #Plot Soil_cond per field
 ggplot(PhCh, aes(x = Field, y = Soil_cond, color = Field)) +
@@ -141,18 +141,31 @@ ggplot(PhCh, aes(x = Date, y = Water_temp, color = Field)) +
 
 
 
-#Plot O2_percent per field
-ggplot(PhCh, aes(x = Field, y = O2_percent, color = Field)) +
+#Plot O2_percent per field and treatment
+ggplot(PhCh, aes(x = Field, y = O2_percent, color = Treatment)) +
+  geom_jitter(width = 0.1) +
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, stroke = 1.5) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
+  labs(title = "O2 % per Field and Treatment") +
+  theme_bw()
+#Plot O2_percent per date
+ggplot(PhCh, aes(x = Date, y = O2_percent, color = Field)) +
+  geom_line() +
+  facet_wrap(~Treatment) +
+  labs(title = "O2 % per Field & Treatment Over Time") +
+  theme_bw()
+#Plot O2_percent per treatment
+ggplot(PhCh, aes(x = Treatment, y = O2_percent, color = Treatment)) +
   geom_jitter(width = 0.1) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, stroke = 1.5, color = "black") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
   labs(title = "O2 % per Field") +
   theme_bw()
-#Plot Water_temp per date
-ggplot(PhCh, aes(x = Date, y = O2_percent, color = Field)) +
-  geom_line() +
-  facet_wrap(~Treatment) +
-  labs(title = "O2 % per Field Over Time") +
+#Plot O2_percent per field and treatment, facet per date
+ggplot(PhCh, aes(x = Field, y = O2_percent, color = Treatment)) +
+  geom_point(size = 2) +
+  facet_wrap(~Date) +
+  labs(title = "O2 % per Field and Date") +
   theme_bw()
 
 
@@ -163,7 +176,7 @@ ggplot(PhCh, aes(x = Field, y = O2_mgL, color = Field)) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
   labs(title = "O2 mg/L per Field") +
   theme_bw()
-#Plot Water_temp per date
+#Plot O2_mgL per date
 ggplot(PhCh, aes(x = Date, y = O2_mgL, color = Field)) +
   geom_line() +
   facet_wrap(~Treatment) +
@@ -221,26 +234,77 @@ library(car)
 
 #Load data
 PhCh <- read.csv2("data/original/Physicochemical.csv") %>% 
-  mutate(Date = as.POSIXct(Date),
+  mutate(Date = as.factor(Date),
          Field = as.factor(Field)) %>% 
   filter(Treatment %in% c("BE", "FO"))
 
 
-#Fit LMM
-model <- glmmTMB(Soil_cond ~ Field, data = PhCh, family = gaussian)
-summary(model)
-r2(model)
 
-Anova(model)
+#Fit LMM for Soil conductivity
+lm_soilcond <- lm(sqrt(Soil_cond) ~ Field+Date, data = PhCh)
+summary(lm_soilcond)
+r2(lm_soilcond)
 
-emmeans(model, pairwise ~ Field)
+Anova(lm_soilcond, type = 2)
+emmeans(lm_soilcond, pairwise ~ Field)
+emmeans(lm_soilcond, pairwise ~ Date)
 
-Soil_cond_emm <- as.data.frame(emmeans(model, pairwise ~Field)$emmeans)
-ggplot(Soil_cond_emm, aes(x = Field, y = emmean))+
+#Model diagnostics
+dharma <- simulateResiduals(lm_soilcond, plot = T)
+
+
+Field_emm <- as.data.frame(emmeans(lm_soilcond, pairwise ~ Field)$emmeans)
+ggplot(Field_emm, aes(x = Field, y = emmean))+
   geom_point(size = 2)+
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL, width = 0.2))+
   labs(x = "Field", y = "Estimated Marginal Mean of Soil_cond")+
   theme_minimal()
 
+Date_emm <- as.data.frame(emmeans(lm_soilcond, pairwise ~ Date)$emmeans)
+ggplot(Date_emm, aes(x = Date, y = emmean))+
+  geom_point(size = 2)+
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL, width = 0.2))+
+  labs(x = "Date", y = "Estimated Marginal Mean of Soil_cond")+
+  theme_minimal()
+
+
+
+#Fit LMM for O2
+
+lm_O2 <- lm(log(O2_percent) ~ Field*Treatment, data = PhCh)
+summary(lm_O2)
+r2(lm_O2)
+
+Anova(lm_O2, type = 3)
+
+
+emmeans(lm_O2, pairwise ~ Field)
+emmeans(lm_O2, pairwise ~ Treatment)
+emmeans(lm_O2, pairwise ~ Treatment|Field)
+
 #Model diagnostics
-dharma <- simulateResiduals(model, plot = T)
+dharma <- simulateResiduals(lm_O2, plot = T)
+
+
+Field_emm <- as.data.frame(emmeans(lm_O2, pairwise ~ Field)$emmeans)
+ggplot(Field_emm, aes(x = Field, y = emmean))+
+  geom_point(size = 2)+
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL, width = 0.2))+
+  labs(x = "Field", y = "Estimated Marginal Mean of O2")+
+  theme_minimal()
+
+Treatment_emm <- as.data.frame(emmeans(lm_O2, pairwise ~ Treatment)$emmeans)
+ggplot(Treatment_emm, aes(x = Treatment, y = emmean))+
+  geom_point(size = 2)+
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL, width = 0.2))+
+  labs(x = "Treatment", y = "Estimated Marginal Mean of O2")+
+  theme_minimal()
+
+Field_Treatment_emm <- as.data.frame(emmeans(lm_O2, pairwise ~ Field|Treatment)$emmeans)
+ggplot(Field_Treatment_emm, aes(x = Treatment, y = emmean))+
+  geom_point(size = 2)+
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL, width = 0.2))+
+  facet_wrap(~ Field, scales = "free_y")+
+  labs(x = "Treatment", y = "Estimated Marginal Mean of O2")+
+  theme_minimal()
+  
