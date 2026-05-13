@@ -14,11 +14,14 @@ library(car)
 
 
 # Load data
-root <- read.csv2("data/original/Root_dmg_20.csv") %>% 
+root <- read.csv2("data/original/Root_dmg_tot.csv") %>% 
         mutate(Date = as.POSIXct(Date),
-               Field = as.character(Field), 
-               Repeat = as.character(Repeat)) %>% 
-        filter(Treatment %in% c("BE", "FO"))
+               Field = as.factor(Field), 
+               Repeats = as.character(Repeats)) %>% 
+        filter(Treatment %in% c("BE", "FO"),
+               Date == "2025-06-30",
+               Root_weight < 3) #Remove one outlier with weight value higher than 6
+
 
 # Fit LMM
 model <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
@@ -26,6 +29,8 @@ model <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field),
                 family = gaussian)
 summary(model)
 r2(model)
+
+Anova(model, type = 2)
 emmeans(model, pairwise ~ Treatment)
 
 root_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
@@ -48,6 +53,7 @@ model_no5 <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field),
                 data = root_no5, 
                 family = gaussian)
 summary(model_no5)
+r2(model_no5)
 emmeans(model_no5, pairwise ~ Treatment)
 
 rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment)$emmeans)
