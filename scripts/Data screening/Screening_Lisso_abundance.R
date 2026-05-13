@@ -82,7 +82,7 @@ ggplot(Lisso_abundance, aes(x = Treatment, y = Abundance)) +
 
 
 
-#Calculate the contribution of waterbirds to yield
+#Calculate the contribution of waterbirds to lisso adult abundance
 Abundance_summ <- Lisso_abundance %>% 
   group_by(Field, Treatment) %>% 
   summarise(mean_abundance = mean(Abundance, na.rm = TRUE))
