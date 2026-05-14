@@ -52,17 +52,17 @@ ggplot(Lisso_abundance, aes(x = Field, y = Abundance, fill = Treatment, color = 
   geom_jitter(width = 0.1) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 2.5, stroke = 1.5, color = "black") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
-  labs(title = "Lissorhoptrus adult abundance per field",
+  labs(title = "Lissorhoptrus adult abundance per field & treatment",
        x = "Field",
        y = "Nº of adults") +
   theme_bw()
 
 
 #Plot abundance per treatment per field
-ggplot(Lisso_abundance, aes(x = Treatment, y = Abundance)) +
-  geom_jitter(width = 0.05, height = 0) +
-  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "red") +
-  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2, color = "red") +
+ggplot(Lisso_abundance, aes(x = Date, y = Abundance, color = Treatment)) +
+  geom_jitter(width = 0.1, height = 0) +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3.5) +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.15) +
   facet_wrap(~Field) +
   labs(title = "Abundance per treatment and field",
        x = "Treatment",
@@ -80,6 +80,16 @@ ggplot(Lisso_abundance, aes(x = Treatment, y = Abundance)) +
        y = "Nº of adults") +
   theme_bw()
 
+
+#Plot lisso abundance per date
+ggplot(Lisso_abundance, aes(x = Date, y = Abundance, color = Treatment)) +
+  geom_smooth() +
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 2) +
+  facet_wrap(~Field) +
+  labs(title = "Lissorhoptrus adult abundace over time",
+       x = "Date",
+       y = "Nº of adults") +
+  theme_bw()
 
 
 #Calculate the contribution of waterbirds to lisso adult abundance
