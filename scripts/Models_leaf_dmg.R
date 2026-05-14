@@ -1,8 +1,12 @@
-### Leaf damage ###
+#### LEAF DAMAGE ####
+
 ######## Mixed models analysis ########
 
 
 rm(list = ls())
+cat("\014")
+graphics.off()
+pacman::p_unload(pacman::p_loaded(), character.only = TRUE, force = TRUE)
 
 #Load libraries
 library(tidyverse)
@@ -25,18 +29,25 @@ leaf_dmg <- leaf_dmg %>%
   mutate(julian_day = yday(Date)) %>% 
   filter(Treatment %in% c("BE", "FO"))
 
-#Paired t-test glmmTMB
+#Add column with a number per observation for the random effect of overdispersion
+leaf_dmg <- leaf_dmg %>% mutate(obs = 1:n())
+
+
+#### LMM binomial ####
 model <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + julian_day + (1|Field), data = leaf_dmg, family = binomial)
 summary(model)
 r2(model)
-emmeans(model, pairwise ~ Treatment)
 
 Anova(model)
 
-#Plot emmeans
-leaf_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
+#Model diagnostics
+dharma <- simulateResiduals(model, plot = T)
 
-ggplot(leaf_emm, aes(x = Treatment, y = emmean)) +
+#Plot emmeans
+emmeans(model, pairwise ~ Treatment)
+
+leaf_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(leaf_emm, aes(x = Treatment, y = prob)) +
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
   labs(title = "Estimated Marginal Means of Leaf Damage by Treatment",
@@ -44,8 +55,20 @@ ggplot(leaf_emm, aes(x = Treatment, y = emmean)) +
        y = "Estimated Marginal Mean of Leaf Damage") +
   theme_minimal()
 
-#Model assumptions
-dharma <- simulateResiduals(model, plot = T)
+#### LMM binomial transformed ####
+model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + factor(julian_day) + (1|Field) + (1|obs), data = leaf_dmg, family = binomial)
+summary(model.2)
+r2(model.2)
+
+Anova(model.2)
+
+#Model diagnostics
+dharma <- simulateResiduals(model.2, plot = T)
+
+
+model_performance(model)
+model_performance(model.2)
+MuMIn::model.sel(model, model.2)
 
 
 ######## Mixed model without field 5 data ########
