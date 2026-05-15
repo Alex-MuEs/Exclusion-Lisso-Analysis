@@ -55,8 +55,10 @@ ggplot(leaf_emm, aes(x = Treatment, y = prob)) +
        y = "Estimated Marginal Mean of Leaf Damage") +
   theme_minimal()
 
-#### LMM binomial transformed ####
-model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + factor(julian_day) + (1|Field) + (1|obs), data = leaf_dmg, family = binomial)
+
+
+#### LMM betabinomial transformed ####
+model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + factor(julian_day) + (1|Field), data = leaf_dmg, family = betabinomial)
 summary(model.2)
 r2(model.2)
 
@@ -71,12 +73,16 @@ model_performance(model.2)
 MuMIn::model.sel(model, model.2)
 
 
-######## Mixed model without field 5 data ########
+
+######## Without field 5 ########
 leaf_dmg_no5 <- leaf_dmg %>% filter(Field != 5)
 
 model_no5 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + julian_day + (1|Field), data = leaf_dmg_no5, family = binomial)
 summary(model_no5)
 r2(model_no5)
+
+Anova(model_no5)
+
 emmeans(model_no5, pairwise ~ Treatment)
 
 leafno5_emm<-as.data.frame(emmeans(model_no5, pairwise ~ Treatment)$emmeans)
@@ -90,6 +96,22 @@ ggplot(leafno5_emm, aes(x = Treatment, y = emmean)) +
 
 #Model assumptions
 dharma_no5 <- simulateResiduals(model_no5, plot = T)
+
+
+#Transformed model without field 5
+model_no5.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + factor(julian_day) + (1|Field), data = leaf_dmg_no5, family = betabinomial)
+summary(model_no5.2)
+r2(model_no5.2)
+
+Anova(model_no5.2)
+
+#Model diagnostics
+dharma_no5.2 <- simulateResiduals(model_no5.2, plot = T)
+
+
+model_performance(model_no5)
+model_performance(model_no5.2)
+MuMIn::model.sel(model_no5, model_no5.2)
 
 
 ######## Figure ########
