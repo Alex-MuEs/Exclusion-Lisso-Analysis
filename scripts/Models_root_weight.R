@@ -31,7 +31,13 @@ summary(model)
 r2(model)
 
 Anova(model, type = 2)
+
 emmeans(model, pairwise ~ Treatment)
+
+#Compose model diagnostics
+dharma <- simulateResiduals(model, plot = T)
+model_performance(model)
+
 
 root_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
 ggplot(root_emm, aes(x = Treatment, y = emmean)) +
@@ -41,8 +47,6 @@ ggplot(root_emm, aes(x = Treatment, y = emmean)) +
         theme_minimal()
 
 
-#Compose model diagnostics
-dharma <- simulateResiduals(model, plot = T)
 
 
 
@@ -56,6 +60,12 @@ summary(model_no5)
 r2(model_no5)
 emmeans(model_no5, pairwise ~ Treatment)
 
+
+#Model diagnostics
+dharma <- simulateResiduals(model_no5, plot = T)
+model_performance(model_no5)
+
+
 rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment)$emmeans)
 ggplot(rootno5_emm, aes(x = Treatment, y = emmean)) +
   geom_point(size = 2) +
@@ -64,8 +74,6 @@ ggplot(rootno5_emm, aes(x = Treatment, y = emmean)) +
   theme_minimal()
 
 
-#Model diagnostics
-dharma <- simulateResiduals(model_no5, plot = T)
 
 
 
