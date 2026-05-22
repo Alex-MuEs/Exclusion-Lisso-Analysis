@@ -17,10 +17,11 @@ Yield <- read_csv2("data/original/Yield.csv") %>%
   mutate(Date = as.POSIXct(Date),
          Field = as.factor(Field), 
          Repeat = as.character(Repeat)) %>% 
+  rename(Yield = `Yield_kg/ha_HR14`) %>%
   filter(Treatment %in% c("BE", "FO"))
 
 #Fit LMM
-model <- glmmTMB(sqrt(`Yield_kg/ha_HR14`) ~ Treatment + (1|Field), data = Yield, family = gaussian)
+model <- glmmTMB(sqrt(Yield) ~ Treatment + (1|Field), data = Yield, family = gaussian)
 summary(model)
 r2(model)
 
@@ -43,7 +44,7 @@ dharma <- simulateResiduals(model, plot = T)
 Yield_no5 <- Yield %>% 
   filter(Field != "5")
 
-model_no5 <- glmmTMB(sqrt(`Yield_kg/ha_HR14`) ~ Treatment + (1|Field), data = Yield_no5, family = gaussian)
+model_no5 <- glmmTMB(sqrt(Yield) ~ Treatment + (1|Field), data = Yield_no5, family = gaussian)
 summary(model_no5)
 r2(model_no5)
 
@@ -68,9 +69,9 @@ dharma_no5 <- simulateResiduals(model_no5, plot = T)
 
 yield_summ <- Yield %>% 
   group_by(Field, Treatment) %>% 
-  summarise(mean_yield = mean(`Yield_kg/ha_HR14`),
-            sd = sd(`Yield_kg/ha_HR14`, na.rm = TRUE),
-            n = sum(!is.na(`Yield_kg/ha_HR14`)),
+  summarise(mean_yield = mean(Yield),
+            sd = sd(Yield, na.rm = TRUE),
+            n = sum(!is.na(Yield)),
             se = sd / sqrt(n),
             .groups = "drop"
   )
@@ -92,7 +93,7 @@ pal_cb <- c(
 ggplot() +
   geom_jitter(
     data = Yield,
-    aes(x = Treatment, y = `Yield_kg/ha_HR14`, color = as.factor(Field)),
+    aes(x = Treatment, y = Yield, color = as.factor(Field)),
     width = 0.07, height = 0,
     alpha = 0.30, size = 2.5
   ) +
@@ -155,9 +156,9 @@ geom_line(
 
 yieldno5_summ <- Yield_no5 %>% 
   group_by(Field, Treatment) %>% 
-  summarise(mean_yield = mean(`Yield_kg/ha_HR14`),
-            sd = sd(`Yield_kg/ha_HR14`, na.rm = TRUE),
-            n = sum(!is.na(`Yield_kg/ha_HR14`)),
+  summarise(mean_yield = mean(Yield),
+            sd = sd(Yield, na.rm = TRUE),
+            n = sum(!is.na(Yield)),
             se = sd / sqrt(n),
             .groups = "drop"
   )
@@ -168,7 +169,7 @@ yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment)$emmeans)
 ggplot() +
   geom_jitter(
     data = Yield_no5,
-    aes(x = Treatment, y = `Yield_kg/ha_HR14`, color = as.factor(Field)),
+    aes(x = Treatment, y = Yield, color = as.factor(Field)),
     width = 0.07, height = 0,
     alpha = 0.30, size = 2.5
   ) +
