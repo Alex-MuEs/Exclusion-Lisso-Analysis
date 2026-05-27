@@ -29,8 +29,6 @@ leaf_dmg <- leaf_dmg %>%
   mutate(julian_day = yday(Date)) %>% 
   filter(Treatment %in% c("BE", "FO"))
 
-#Add column with a number per observation for the random effect of overdispersion
-leaf_dmg <- leaf_dmg %>% mutate(obs = 1:n())
 
 
 #### LMM binomial ####
@@ -58,7 +56,7 @@ ggplot(leaf_emm, aes(x = Treatment, y = prob)) +
 
 
 #### LMM betabinomial transformed ####
-model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + factor(julian_day) + (1|Field), data = leaf_dmg, family = betabinomial)
+model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + as.factor(Date) + (1|Field), data = leaf_dmg, family = betabinomial)
 summary(model.2)
 r2(model.2)
 
