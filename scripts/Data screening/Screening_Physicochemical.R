@@ -132,6 +132,13 @@ ggplot(PhCh, aes(x = Field, y = Water_temp, color = Field)) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
   labs(title = "Water Temperature per Field") +
   theme_bw()
+#Plot Water_temp per field and treatment
+ggplot(PhCh, aes(x = Field, y = Water_temp, color = Treatment)) +
+  geom_jitter(width = 0.1) +
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, stroke = 1.5) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
+  labs(title = "Water Temperature per Field and Treatment") +
+  theme_bw()
 #Plot Water_temp per date
 ggplot(PhCh, aes(x = Date, y = Water_temp, color = Field)) +
   geom_line() +
@@ -159,7 +166,7 @@ ggplot(PhCh, aes(x = Treatment, y = O2_percent, color = Treatment)) +
   geom_jitter(width = 0.1) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, stroke = 1.5, color = "black") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15, size  = 1) +
-  labs(title = "O2 % per Field") +
+  labs(title = "O2 % per Treatment") +
   theme_bw()
 #Plot O2_percent per field and treatment, facet per date
 ggplot(PhCh, aes(x = Field, y = O2_percent, color = Treatment)) +
