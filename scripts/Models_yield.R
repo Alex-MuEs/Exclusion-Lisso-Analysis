@@ -20,7 +20,7 @@ Yield <- read_csv2("data/original/Yield.csv") %>%
   rename(Yield = `Yield_kg/ha_HR14`) %>%
   filter(Treatment %in% c("BE", "FO"))
 
-#Fit LMM
+#### Fit LMM ####
 model <- glmmTMB(sqrt(Yield) ~ Treatment + (1|Field), data = Yield, family = gaussian)
 summary(model)
 r2(model)
@@ -29,6 +29,9 @@ Anova(model)
 
 emmeans(model, pairwise ~ Treatment)
 
+#Model diagnostics
+dharma <- simulateResiduals(model, plot = T)
+
 yield_emm <- as.data.frame(emmeans(model, pairwise ~Treatment)$emmeans)
 ggplot(yield_emm, aes(x = Treatment, y = emmean))+
          geom_point(size = 2)+
@@ -36,11 +39,10 @@ ggplot(yield_emm, aes(x = Treatment, y = emmean))+
          labs(x = "Treatment", y = "Estimated Marginal Mean of Yield (kg/ha)")+
          theme_minimal()
 
-#Model diagnostics
-dharma <- simulateResiduals(model, plot = T)
 
 
-######## Mixxed model without field 5 data ######## 
+
+#### LMM without field 5 data ####
 Yield_no5 <- Yield %>% 
   filter(Field != "5")
 
@@ -52,6 +54,10 @@ Anova(model_no5)
 
 emmeans(model_no5, pairwise ~ Treatment)
 
+#Model diagnostics
+dharma_no5 <- simulateResiduals(model_no5, plot = T)
+
+
 yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment)$emmeans)
 ggplot(yieldno5_emm, aes(x = Treatment, y = emmean))+
   geom_point(size = 2)+
@@ -59,13 +65,11 @@ ggplot(yieldno5_emm, aes(x = Treatment, y = emmean))+
   labs(x = "Treatment", y = "Estimated Marginal Mean of Yield (kg/ha)")+
   theme_minimal()
 
-#Model diagnostics
-dharma_no5 <- simulateResiduals(model_no5, plot = T)
 
 
 
 
-######## Figure ######## 
+#### Figure ####
 
 yield_summ <- Yield %>% 
   group_by(Field, Treatment) %>% 
@@ -152,7 +156,7 @@ geom_line(
 
 
 
-######## Figure without field 5 data ######## 
+#### Figure without field 5 data ####
 
 yieldno5_summ <- Yield_no5 %>% 
   group_by(Field, Treatment) %>% 

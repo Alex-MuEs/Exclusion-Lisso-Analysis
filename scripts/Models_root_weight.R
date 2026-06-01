@@ -23,7 +23,7 @@ root <- read.csv2("data/original/Root_dmg_tot.csv") %>%
                Root_weight < 3) #Remove one outlier with weight value higher than 6
 
 
-# Fit LMM
+#### Fit LMM ####
 model <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
                 data = root, 
                 family = gaussian)
@@ -50,7 +50,7 @@ ggplot(root_emm, aes(x = Treatment, y = emmean)) +
 
 
 
-######## Mixed model without field 5 data ######## 
+#### LMM without field 5 data ####
 root_no5 <- root %>% filter(Field != "5")
 
 model_no5 <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
@@ -77,7 +77,7 @@ ggplot(rootno5_emm, aes(x = Treatment, y = emmean)) +
 
 
 
-######## Figure ########
+#### Figure ####
 
 root_summ <- root %>% 
   group_by(Field, Treatment) %>% 
@@ -164,7 +164,7 @@ ggplot() +
 
 
 
-######## Figure without field 5 data ######## 
+#### Figure without field 5 data ####
 
 rootno5_summ <- root_no5 %>% 
   group_by(Field, Treatment) %>% 

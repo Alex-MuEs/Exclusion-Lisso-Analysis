@@ -152,7 +152,7 @@ ggplot(model_emm.2, aes(x = Date, y = emmean, color = Treatment)) +
 
 
 
-######## FIGURE TREATMENT ########
+#### FIGURE TREATMENT ####
 
 lisso_summ <- Lisso %>% 
   group_by(Field, Treatment) %>% 
