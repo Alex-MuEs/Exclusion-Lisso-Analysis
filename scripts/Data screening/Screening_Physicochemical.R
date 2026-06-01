@@ -91,7 +91,7 @@ ggplot(PhCh, aes(x = Treatment, y = pH)) +
 
 
 
-###### Assessing differences in field 5 ####
+##### Assessing differences in field 5 ####
 
 #Plot Soil_cond per field
 ggplot(PhCh, aes(x = Field, y = Soil_cond, color = Field)) +
@@ -226,7 +226,7 @@ ggplot(PhCh, aes(x = Date, y = pH, color = Field)) +
 
 
 
-######## Mixed models analysis ########
+##### Mixed models analysis #####
 
 rm(list = ls())
 
