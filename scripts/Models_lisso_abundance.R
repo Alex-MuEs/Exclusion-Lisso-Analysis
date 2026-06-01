@@ -122,36 +122,6 @@ MuMIn::model.sel(model.poi, model.disp, model.bn)
 
 
 
-#### Final model ####
-model.final <- glmmTMB(log(Abundance+1) ~ Treatment*Date + (1|Field), data = Lisso, family = gaussian)
-summary(model.final)
-r2(model.final)
-
-Anova(model.final, type = 3)
-
-#Model diagnostics
-dharma <- simulateResiduals(model.final, plot = T)
-
-#Estimated marginal means comparison plots
-emmeans(model.final, pairwise~Treatment)
-emmeans(model.final, pairwise~Treatment|Date)
-
-model_emm <- as.data.frame(emmeans(model.final, pairwise ~ Treatment)$emmeans)
-ggplot(model_emm, aes(x = Treatment, y = emmean)) +
-  geom_point(size = 2) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
-  labs(x = "Treatment", y = "Estimated Marginal Mean of log(Abundance+1)") +
-  theme_minimal()
-model_emm.2 <- as.data.frame(emmeans(model.final, pairwise ~ Treatment|Date)$emmeans)
-ggplot(model_emm.2, aes(x = Date, y = emmean, color = Treatment)) +
-  geom_point(size = 2) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
-  labs(x = "Treatment", y = "Estimated Marginal Mean of log(Abundance+1)") +
-  theme_minimal()
-
-
-
-
 #### FIGURE TREATMENT ####
 
 lisso_summ <- Lisso %>% 

@@ -24,9 +24,12 @@ root <- read.csv2("data/original/Root_dmg_tot.csv") %>%
 
 
 #### Fit LMM ####
-model <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
+check_distribution(model)
+
+model <- glmmTMB(Root_weight ~ Treatment + (1|Field), 
                 data = root, 
-                family = gaussian)
+                family = Gamma (link = "log"))
+
 summary(model)
 r2(model)
 

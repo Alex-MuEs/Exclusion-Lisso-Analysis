@@ -15,20 +15,22 @@ library(DHARMa)
 library(emmeans)
 library(car)
 library(performance)
+library(visreg)
 
 
 
 #Load data
 leaf_dmg <- read.csv2("data/original/leaf_dmg.csv") %>% 
-  mutate(Date = as.POSIXct(Date),
+  mutate(Date = ifelse(Date == "2025-06-13", "2025-06-11", as.character(Date))) %>%
+  mutate(Date = as.factor(Date),
          Field = as.character(Field), 
          Repeat = as.character(Repeat))
+  
 
 leaf_dmg <- leaf_dmg %>%
   mutate(No_dmg = 10 - Leaves_dmg_10leaves) %>% 
-  mutate(julian_day = yday(Date)) %>% 
+  #mutate(julian_day = yday(Date)) %>% 
   filter(Treatment %in% c("BE", "FO"))
-
 
 
 #### LMM binomial ####
@@ -55,15 +57,24 @@ ggplot(leaf_emm, aes(x = Treatment, y = prob)) +
 
 
 
-#### LMM betabinomial transformed ####
-model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + as.factor(Date) + (1|Field), data = leaf_dmg, family = betabinomial)
+#### LMM betabinomial ####
+model.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg, family = betabinomial)
 summary(model.2)
 r2(model.2)
 
-Anova(model.2)
+Anova(model.2, type = 3)
 
 #Model diagnostics
 dharma <- simulateResiduals(model.2, plot = T)
+
+leaf2_emm<-as.data.frame(emmeans(model.2, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(leaf2_emm, aes(x = Treatment, y = prob)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = prob-SE, ymax = prob+SE), width = 0.2) +
+  labs(title = "Estimated Probability of Leaf Damage by Treatment",
+       x = "Treatment",
+       y = "Probability") +
+  theme_minimal()
 
 
 model_performance(model)
@@ -72,10 +83,10 @@ MuMIn::model.sel(model, model.2)
 
 
 
-#### Without field 5 ####
+#### Binomial Without field 5 ####
 leaf_dmg_no5 <- leaf_dmg %>% filter(Field != 5)
 
-model_no5 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + julian_day + (1|Field), data = leaf_dmg_no5, family = binomial)
+model_no5 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg_no5, family = binomial)
 summary(model_no5)
 r2(model_no5)
 
@@ -98,26 +109,34 @@ ggplot(leafno5_emm, aes(x = Treatment, y = emmean)) +
 
 
 
-#Transformed model without field 5
-model_no5.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + factor(Date) + (1|Field), data = leaf_dmg_no5, family = betabinomial)
+#### Betabinomial without field 5 ####
+model_no5.2 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg_no5, family = betabinomial)
 summary(model_no5.2)
 r2(model_no5.2)
 
-Anova(model_no5.2)
+Anova(model_no5.2, type = 3)
 
 #Model diagnostics
 dharma_no5.2 <- simulateResiduals(model_no5.2, plot = T)
 
 
-model_performance(model_no5)
-model_performance(model_no5.2)
-MuMIn::model.sel(model_no5, model_no5.2)
+leafno5.2_emm<-as.data.frame(emmeans(model_no5.2, pairwise ~ Treatment|Date, type = "response")$emmeans)
+ggplot(leafno5.2_emm, aes(x = Treatment, y = prob)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = prob-SE, ymax = prob+SE), width = 0.2) +
+  facet_wrap(~Date) +
+  labs(title = "Estimated Probability of Leaf Damage by Treatment",
+       x = "Treatment",
+       y = "Probability") +
+  theme_minimal()
+
+visreg(model_no5.2, xvar= "Date", by="Treatment", scale="response", type = "conditional", overlay=TRUE)
 
 
 #### Figure ####
 
 leaf_summ <- leaf_dmg %>% 
-  group_by(Field, Treatment) %>% 
+  group_by(Field, Treatment, Date) %>% 
   summarise(mean_dmg = mean(Leaves_dmg_10leaves/10),
             sd = sd(Leaves_dmg_10leaves/10, na.rm = TRUE),
             n = sum(!is.na(Leaves_dmg_10leaves/10)),
@@ -125,7 +144,7 @@ leaf_summ <- leaf_dmg %>%
             .groups = "drop"
   )
 
-leaf_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment, type = "response")$emmeans)
+leaf_emm <- as.data.frame(emmeans(model.2, pairwise ~ Treatment|Date, type = "response")$emmeans)
 
 
 pd_jitter <- position_jitter(width = 0.07, height = 0)
@@ -172,8 +191,8 @@ ggplot() +
   geom_errorbar(
     data = leaf_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL,
-        ymax = asymp.UCL,
+        ymin = prob-SE,
+        ymax = prob+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -192,19 +211,20 @@ ggplot() +
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
     y = "Proporción de hojas dañadas",
   ) +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 14)+
+  facet_wrap(~Date)
 
 
 
 #### Figure without field 5 data ####
 
 leafno5_summ <- leaf_dmg_no5 %>% 
-  group_by(Field, Treatment) %>% 
+  group_by(Field, Treatment,Date) %>% 
   summarise(mean_dmg = mean(Leaves_dmg_10leaves/10),
             sd = sd(Leaves_dmg_10leaves/10, na.rm = TRUE),
             n = sum(!is.na(Leaves_dmg_10leaves/10)),
@@ -212,7 +232,7 @@ leafno5_summ <- leaf_dmg_no5 %>%
             .groups = "drop"
   )
 
-leafno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment, type = "response")$emmeans)
+leafno5_emm <- as.data.frame(emmeans(model_no5.2, pairwise ~ Treatment|Date, type = "response")$emmeans)
 
 
 ggplot() +
@@ -248,8 +268,8 @@ ggplot() +
   geom_errorbar(
     data = leafno5_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL,
-        ymax = asymp.UCL,
+        ymin = prob-SE,
+        ymax = prob+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -268,9 +288,10 @@ ggplot() +
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
     y = "Proporción de hojas dañadas",
   ) +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 14) +
+  facet_wrap(~Date)

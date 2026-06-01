@@ -21,21 +21,21 @@ Yield <- read_csv2("data/original/Yield.csv") %>%
   filter(Treatment %in% c("BE", "FO"))
 
 #### Fit LMM ####
-model <- glmmTMB(sqrt(Yield) ~ Treatment + (1|Field), data = Yield, family = gaussian)
+model <- glmmTMB(Yield ~ Treatment + (1|Field), data = Yield, family = Gamma (link = "log"))
 summary(model)
 r2(model)
 
 Anova(model)
 
-emmeans(model, pairwise ~ Treatment)
+emmeans(model, pairwise ~ Treatment, type = "response")
 
 #Model diagnostics
 dharma <- simulateResiduals(model, plot = T)
 
-yield_emm <- as.data.frame(emmeans(model, pairwise ~Treatment)$emmeans)
-ggplot(yield_emm, aes(x = Treatment, y = emmean))+
+yield_emm <- as.data.frame(emmeans(model, pairwise ~Treatment, type = "response")$emmeans)
+ggplot(yield_emm, aes(x = Treatment, y = response))+
          geom_point(size = 2)+
-         geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL, width = 0.2))+
+         geom_errorbar(aes(ymin = response-SE, ymax = response+SE, width = 0.2))+
          labs(x = "Treatment", y = "Estimated Marginal Mean of Yield (kg/ha)")+
          theme_minimal()
 
@@ -46,22 +46,22 @@ ggplot(yield_emm, aes(x = Treatment, y = emmean))+
 Yield_no5 <- Yield %>% 
   filter(Field != "5")
 
-model_no5 <- glmmTMB(sqrt(Yield) ~ Treatment + (1|Field), data = Yield_no5, family = gaussian)
+model_no5 <- glmmTMB(Yield ~ Treatment + (1|Field), data = Yield_no5, family = Gamma (link = "log"))
 summary(model_no5)
 r2(model_no5)
 
 Anova(model_no5)
 
-emmeans(model_no5, pairwise ~ Treatment)
+emmeans(model_no5, pairwise ~ Treatment, type = "response")
 
 #Model diagnostics
 dharma_no5 <- simulateResiduals(model_no5, plot = T)
 
 
-yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment)$emmeans)
-ggplot(yieldno5_emm, aes(x = Treatment, y = emmean))+
+yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment, type = "response")$emmeans)
+ggplot(yieldno5_emm, aes(x = Treatment, y = response))+
   geom_point(size = 2)+
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL, width = 0.2))+
+  geom_errorbar(aes(ymin = response-SE, ymax = response+SE, width = 0.2))+
   labs(x = "Treatment", y = "Estimated Marginal Mean of Yield (kg/ha)")+
   theme_minimal()
 
@@ -80,7 +80,7 @@ yield_summ <- Yield %>%
             .groups = "drop"
   )
 
-yield_emm <- as.data.frame(emmeans(model, pairwise ~Treatment)$emmeans)
+yield_emm <- as.data.frame(emmeans(model, pairwise ~Treatment, type = "response")$emmeans)
 
 
 pd_jitter <- position_jitter(width = 0.07, height = 0)
@@ -118,7 +118,7 @@ ggplot() +
   
 geom_line(
   data = yield_emm,
-  aes(x = Treatment, y = emmean^2, group = 1),
+  aes(x = Treatment, y = response, group = 1),
   inherit.aes = FALSE,
   linewidth = 1.6,
   color = "black"
@@ -127,8 +127,8 @@ geom_line(
   geom_errorbar(
     data = yield_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL^2,
-        ymax = asymp.UCL^2,
+        ymin = response-SE,
+        ymax = response+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -138,7 +138,7 @@ geom_line(
   
   geom_point(
     data = yield_emm,
-    aes(x = Treatment, y = emmean^2),
+    aes(x = Treatment, y = response),
     inherit.aes = FALSE,
     size = 4.8,
     shape = 21,
@@ -147,10 +147,10 @@ geom_line(
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
-    y = "Yield (Kg/Ha)",
+    y = "Yield (Kg/ha)",
   ) +
   theme_minimal(base_size = 14)
 
@@ -167,7 +167,7 @@ yieldno5_summ <- Yield_no5 %>%
             .groups = "drop"
   )
 
-yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment)$emmeans)
+yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment, type = "response")$emmeans)
 
 
 ggplot() +
@@ -194,7 +194,7 @@ ggplot() +
   
   geom_line(
     data = yieldno5_emm,
-    aes(x = Treatment, y = emmean^2, group = 1),
+    aes(x = Treatment, y = response, group = 1),
     inherit.aes = FALSE,
     linewidth = 1.6,
     color = "black"
@@ -203,8 +203,8 @@ ggplot() +
   geom_errorbar(
     data = yieldno5_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL^2,
-        ymax = asymp.UCL^2,
+        ymin = response-SE,
+        ymax = response+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -214,7 +214,7 @@ ggplot() +
   
   geom_point(
     data = yieldno5_emm,
-    aes(x = Treatment, y = emmean^2),
+    aes(x = Treatment, y = response),
     inherit.aes = FALSE,
     size = 4.8,
     shape = 21,
@@ -223,9 +223,9 @@ ggplot() +
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
-    y = "Yield (Kg/Ha)",
+    y = "Yield (Kg/ha)",
   ) +
   theme_minimal(base_size = 14)
