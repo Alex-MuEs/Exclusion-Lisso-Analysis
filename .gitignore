@@ -52,8 +52,6 @@ rsconnect/
 # MacOS Finder automatic cache and metadata files
 .DS_Store
 
-# Output plots folder
-/plots
 
 # Modified (not raw) data folder
 /data/modified
