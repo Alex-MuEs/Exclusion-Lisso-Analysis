@@ -16,36 +16,38 @@ library(car)
 # Load data
 root <- read.csv2("data/original/Root_dmg_tot.csv") %>% 
         mutate(Date = as.POSIXct(Date),
-               Field = as.factor(Field), 
+               Field = as.factor(Field),
                Repeats = as.character(Repeats)) %>% 
         filter(Treatment %in% c("BE", "FO"),
                Date == "2025-06-30",
-               Root_weight < 3) #Remove one outlier with weight value higher than 6
-
+               Root_weight < 3) %>% #Remove one outlier with weight value higher than 6
+        mutate(Treatment = as.factor(Treatment)) %>% 
+        select(-Observations)
+  
 
 #### Fit LMM ####
-check_distribution(model)
-
 model <- glmmTMB(Root_weight ~ Treatment + (1|Field), 
                 data = root, 
                 family = Gamma (link = "log"))
+
+check_distribution(model)
 
 summary(model)
 r2(model)
 
 Anova(model, type = 2)
 
-emmeans(model, pairwise ~ Treatment)
+emmeans(model, pairwise ~ Treatment, type = "response")
 
 #Compose model diagnostics
 dharma <- simulateResiduals(model, plot = T)
 model_performance(model)
 
 
-root_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
-ggplot(root_emm, aes(x = Treatment, y = emmean)) +
+root_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(root_emm, aes(x = Treatment, y = response)) +
         geom_point(size = 2) +
-        geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+        geom_errorbar(aes(ymin = response-SE, ymax = response+SE), width = 0.2) +
         labs(x = "Treatment", y = "Estimated Marginal Mean of Root Weight") +
         theme_minimal()
 
@@ -56,12 +58,15 @@ ggplot(root_emm, aes(x = Treatment, y = emmean)) +
 #### LMM without field 5 data ####
 root_no5 <- root %>% filter(Field != "5")
 
-model_no5 <- glmmTMB(sqrt(Root_weight) ~ Treatment + (1|Field), 
+model_no5 <- glmmTMB(Root_weight ~ Treatment + (1|Field), 
                 data = root_no5, 
-                family = gaussian)
+                family = Gamma (link = "log"))
+
+check_distribution(model_no5)
+
 summary(model_no5)
 r2(model_no5)
-emmeans(model_no5, pairwise ~ Treatment)
+emmeans(model_no5, pairwise ~ Treatment, type = "response")
 
 
 #Model diagnostics
@@ -69,14 +74,15 @@ dharma <- simulateResiduals(model_no5, plot = T)
 model_performance(model_no5)
 
 
-rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment)$emmeans)
-ggplot(rootno5_emm, aes(x = Treatment, y = emmean)) +
+rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(rootno5_emm, aes(x = Treatment, y = response)) +
   geom_point(size = 2) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  geom_errorbar(aes(ymin = response-SE, ymax = response+SE), width = 0.2) +
   labs(x = "Treatment", y = "Estimated Marginal Mean of Root Weight") +
   theme_minimal()
 
 
+leveneTest(Root_weight ~ Treatment, data = root_no5)
 
 
 
@@ -91,7 +97,7 @@ root_summ <- root %>%
             .groups = "drop"
   )
 
-root_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment)$emmeans)
+root_emm <- as.data.frame(emmeans(model, pairwise ~ Treatment, type = "response")$emmeans)
 
 
 pd_jitter <- position_jitter(width = 0.07, height = 0)
@@ -129,7 +135,7 @@ ggplot() +
   
   geom_line(
     data = root_emm,
-    aes(x = Treatment, y = emmean^2, group = 1),
+    aes(x = Treatment, y = response, group = 1),
     inherit.aes = FALSE,
     linewidth = 1.6,
     color = "black"
@@ -138,8 +144,8 @@ ggplot() +
   geom_errorbar(
     data = root_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL^2,
-        ymax = asymp.UCL^2,
+        ymin = response-SE,
+        ymax = response+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -149,7 +155,7 @@ ggplot() +
   
   geom_point(
     data = root_emm,
-    aes(x = Treatment, y = emmean^2),
+    aes(x = Treatment, y = response),
     inherit.aes = FALSE,
     size = 4.8,
     shape = 21,
@@ -158,13 +164,12 @@ ggplot() +
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
     y = "Root weight (g)",
   ) +
   theme_minimal(base_size = 14)
-
 
 
 #### Figure without field 5 data ####
@@ -178,7 +183,7 @@ rootno5_summ <- root_no5 %>%
             .groups = "drop"
   )
 
-rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment)$emmeans)
+rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment, type ="response")$emmeans)
 
 
 ggplot() +
@@ -205,7 +210,7 @@ ggplot() +
   
   geom_line(
     data = rootno5_emm,
-    aes(x = Treatment, y = emmean^2, group = 1),
+    aes(x = Treatment, y = response, group = 1),
     inherit.aes = FALSE,
     linewidth = 1.6,
     color = "black"
@@ -214,8 +219,8 @@ ggplot() +
   geom_errorbar(
     data = rootno5_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL^2,
-        ymax = asymp.UCL^2,
+        ymin = response-SE,
+        ymax = response+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -225,7 +230,7 @@ ggplot() +
   
   geom_point(
     data = rootno5_emm,
-    aes(x = Treatment, y = emmean^2),
+    aes(x = Treatment, y = response),
     inherit.aes = FALSE,
     size = 4.8,
     shape = 21,
@@ -234,7 +239,7 @@ ggplot() +
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
     y = "Root weight (g)",
