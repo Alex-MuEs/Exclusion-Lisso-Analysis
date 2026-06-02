@@ -1,0 +1,176 @@
+---
+title: "Results paper 1"
+author: "Alejandro Muñoz Escribano"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+# Introduction
+
+```{r Load libraries, include=FALSE}
+library(tidyverse)
+library(glmmTMB)
+library(emmeans)
+library(DHARMa)
+library(performance)
+library(car)
+library (visreg)
+```
+
+# Lisso abundance
+
+## With field 5
+
+```{r, include=FALSE}
+Lisso <- read.csv2("data/modified/Lisso_abundance.csv") %>% 
+  mutate(Date = as.factor(Date),
+         Field = as.factor(Field),
+         Treatment = as.factor(Treatment))
+```
+
+Model formula:
+
+```{r Lisso abundance model}
+model.lisso <- glmmTMB(Abundance ~ Treatment*Date + (1|Field), data = Lisso, family = poisson)
+```
+
+Summary:
+
+```{r, echo=FALSE}
+summary(model.lisso)
+r2(model.lisso)
+Anova(model.lisso, type = 3)
+```
+
+Model diagnostics:
+
+```{r, echo=FALSE}
+dharma <- simulateResiduals(model.lisso, plot = T)
+```
+
+Estimated marginal means plots:
+
+```{r, echo=FALSE}
+emmeans(model.lisso, pairwise~Treatment, type = "response")
+
+lisso_emm <- as.data.frame(emmeans(model.lisso, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(lisso_emm, aes(x = Treatment, y = rate)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
+  labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
+  theme_minimal()
+
+emmeans(model.lisso, pairwise~Treatment|Date, type = "response")
+
+lisso_emm.2 <- as.data.frame(emmeans(model.lisso, pairwise ~ Treatment|Date, type = "response")$emmeans)
+ggplot(lisso_emm.2, aes(x = Date, y = rate, color = Treatment)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
+  labs(x = "Date", y = "Estimated Marginal Mean of Abundance") +
+  theme_minimal()
+```
+
+Figure:
+
+```{r, Lisso abundance figure echo=FALSE}
+pd_jitter <- position_jitter(width = 0.07, height = 0)
+pd_dodge  <- position_dodge(width = 0.15)
+pal_cb <- c(
+  "#0072B2", # azul
+  "#D55E00", # rojo/naranja
+  "#009E73", # verde
+  "#CC79A7", # morado
+  "#E69F00"  # amarillo/naranja
+)
+
+lisso_summ <- Lisso %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_dmg = mean(Abundance),
+            sd = sd(Abundance, na.rm = TRUE),
+            n = sum(!is.na(Abundance)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+#Plot
+ggplot() +
+  geom_jitter(
+    data = Lisso,
+    aes(x = Treatment, y = Abundance, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = lisso_summ,
+    aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = lisso_summ,
+    aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  #Global emmean layer
+  geom_line(
+    data = lisso_emm,
+    aes(x = Treatment, y = rate, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = lisso_emm,
+    aes(x = Treatment,
+        ymin = rate-SE,
+        ymax = rate+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = lisso_emm,
+    aes(x = Treatment, y = rate),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Adult abundance",
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+## Without field 5
