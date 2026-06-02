@@ -14,11 +14,13 @@ library(emmeans)
 library(DHARMa)
 library(performance)
 library(car)
+library (visreg)
 
 #Load data
 Lisso <- read.csv2("data/modified/Lisso_abundance.csv") %>% 
   mutate(Date = as.factor(Date),
-         Field = as.factor(Field))
+         Field = as.factor(Field),
+         Treatment = as.factor(Treatment))
 
 
 
@@ -52,7 +54,7 @@ ggplot(model_emm.2, aes(x = Date, y = emmean, color = Treatment)) +
 
 
 
-#### Fit LMM family poisson ####
+#### Fit LMM poisson ####
 model.poi <- glmmTMB(Abundance ~ Treatment*Date + (1|Field), data = Lisso, family = poisson)
 summary(model.poi)
 r2(model.poi)
@@ -66,17 +68,21 @@ dharma <- simulateResiduals(model.poi, plot = T)
 emmeans(model.poi, pairwise~Treatment)
 emmeans(model.poi, pairwise~Treatment|Date)
 
-model.poi_emm <- as.data.frame(emmeans(model.poi, pairwise ~ Treatment)$emmeans)
-ggplot(model.poi_emm, aes(x = Treatment, y = emmean)) +
+model.poi_emm <- as.data.frame(emmeans(model.poi, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(model.poi_emm, aes(x = Treatment, y = rate)) +
   geom_point(size = 2) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
   labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
   theme_minimal()
-model.poi_emm.2 <- as.data.frame(emmeans(model.poi, pairwise ~ Treatment|Date)$emmeans)
-ggplot(model.poi_emm.2, aes(x = Date, y = emmean, color = Treatment)) +
+model.poi_emm.2 <- as.data.frame(emmeans(model.poi, pairwise ~ Treatment|Date, type = "response")$emmeans)
+ggplot(model.poi_emm.2, aes(x = Date, y = rate, color = Treatment)) +
   geom_point(size = 2) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
-  labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
+  geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
+  labs(x = "Date", y = "Estimated Marginal Mean of Abundance") +
+  theme_minimal()
+
+
+visreg(model.poi, "Treatment", scale="response", type = "conditional", overlay=TRUE, rug = FALSE, gg = TRUE) +
   theme_minimal()
 
 
@@ -86,38 +92,40 @@ model_performance(model.poi)
 
 
 
-#### Comparing models ####
-#with and without interaction
-model.poi <- glmmTMB(Abundance ~ Treatment*Date + (1|Field), data = Lisso, family = poisson)
-summary(model.poi)
-r2(model.poi)
-
-model.poi2 <- glmmTMB(Abundance ~ Treatment+Date + (1|Field), data = Lisso, family = poisson)
-summary(model.poi2)
-r2(model.poi2)
-
-model_performance(model.poi)
-model_performance(model.poi2)
-MuMIn::model.sel(model.poi, model.poi2)
+#### Without field 5 ####
+Lisso_no5<- Lisso %>% 
+  filter (Field != "5")
 
 
-#poisson, negative binomial and poisson with dispersion parameter
-model.disp <- glmmTMB(Abundance ~ Treatment*Date + (1|Field), data = Lisso, family = poisson, dispformula = ~1)
-summary(model.disp)
-r2(model.disp)
-dharma <- simulateResiduals(model.disp, plot = T)
+model.poi_no5 <- glmmTMB(Abundance ~ Treatment*Date + (1|Field), data = Lisso_no5, family = poisson)
+summary(model.poi_no5)
+r2(model.poi_no5)
 
-model.bn <- glmmTMB(Abundance ~ Treatment*Date + (1|Field), data = Lisso, family = nbinom2)
-summary(model.bn)
-r2(model.bn)
-Anova(model.bn, type = 3)
-dharma <- simulateResiduals(model.bn, plot = T)
+Anova(model.poi_no5, type = 3)
 
-model_performance(model.poi)
-model_performance(model.disp)
-model_performance(model.bn)
-MuMIn::model.sel(model.poi, model.disp, model.bn)
+#Model diagnostics
+dharma <- simulateResiduals(model.poi_no5, plot = T)
 
+#Estimated marginal means comparison plots
+emmeans(model.poi_no5, pairwise~Treatment)
+emmeans(model.poi_no5, pairwise~Treatment|Date)
+
+model.poi_no5_emm <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(model.poi_no5_emm, aes(x = Treatment, y = rate)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
+  labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
+  theme_minimal()
+model.poi_no5_emm.2 <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment|Date, type = "response")$emmeans)
+ggplot(model.poi_no5_emm.2, aes(x = Date, y = rate, color = Treatment)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
+  labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
+  theme_minimal()
+
+
+visreg(model.poi_no5, xvar = "Date", by = "Treatment", scale="response", type = "conditional", overlay=TRUE, rug = FALSE, gg = TRUE) +
+  theme_minimal()
 
 
 
@@ -180,8 +188,8 @@ ggplot() +
   geom_errorbar(
     data = lisso_emm,
     aes(x = Treatment,
-        ymin = asymp.LCL,
-        ymax = asymp.UCL,
+        ymin = rate-SE,
+        ymax = rate+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -209,7 +217,7 @@ ggplot() +
 
 
 
-######## FIGURE DATE ########
+#### FIGURE DATE ####
 
 lisso_summ_date <- Lisso %>% 
   group_by(Field, Treatment, Date) %>% 
@@ -257,8 +265,8 @@ ggplot() +
   geom_errorbar(
     data = lisso_emm_date,
     aes(x = Treatment,
-        ymin = asymp.LCL,
-        ymax = asymp.UCL,
+        ymin = rate-SE,
+        ymax = rate+SE,
         group = 1),
     inherit.aes = FALSE,
     width = 0.08,
@@ -277,7 +285,84 @@ ggplot() +
     stroke = 1.2
   ) +
   scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
-  scale_color_manual(values = pal_cb, name = "Experimental plot") +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Abundancia de adultos",
+  ) +
+  theme_minimal(base_size = 14)
+
+
+
+
+#### FIGURE WITHOUT FIELD 5 ####
+
+lisso_no5_summ_date <- Lisso_no5 %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_dmg = mean(Abundance),
+            sd = sd(Abundance, na.rm = TRUE),
+            n = sum(!is.na(Abundance)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+lisso_no5_emm_date <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment, type = "response")$emmeans)
+
+
+ggplot() +
+  geom_jitter(
+    data = Lisso_no5,
+    aes(x = Treatment, y = Abundance, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = lisso_no5_summ_date,
+    aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = lisso_no5_summ_date,
+    aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+
+  
+  #Global emmean layer
+  
+  geom_line(
+    data = lisso_no5_emm_date,
+    aes(x = Treatment, y = rate, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = lisso_no5_emm_date,
+    aes(x = Treatment,
+        ymin = rate-SE,
+        ymax = rate+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = lisso_no5_emm_date,
+    aes(x = Treatment, y = rate),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
     y = "Abundancia de adultos",
