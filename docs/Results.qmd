@@ -160,7 +160,7 @@ ggplot() +
   theme_minimal(base_size = 14)
 ```
 
-Factor treatment*date
+Factor treatment\*date
 
 ```{r Lisso figure date, echo=FALSE}
 lisso_summ_date <- Lisso %>% 
@@ -234,7 +234,6 @@ ggplot() +
   ) +
   theme_minimal(base_size = 14)
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -367,7 +366,7 @@ ggplot() +
   theme_minimal(base_size = 14)
 ```
 
-Factor treatment*date
+Factor treatment\*date
 
 ```{r Lisso figure date no-5, echo=FALSE}
 
@@ -441,6 +440,26 @@ ggplot() +
   theme_minimal(base_size = 14)
 ```
 
-
+------------------------------------------------------------------------
 
 # Leaf damage
+
+## With field 5
+
+```{r Leaf dataframe, include=FALSE}
+leaf_dmg <- read.csv2(here::here("data/original/leaf_dmg.csv")) %>% 
+  mutate(Date = ifelse(Date == "2025-06-13", "2025-06-11", as.character(Date))) %>%
+  mutate(Date = as.factor(Date),
+         Field = as.character(Field), 
+         Repeat = as.character(Repeat)) %>% 
+  mutate(No_dmg = 10 - Leaves_dmg_10leaves) %>% 
+  filter(Treatment %in% c("BE", "FO"))
+
+model.leaf <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg, family = betabinomial)
+```
+
+**Model formula:**
+
+```{r Leaf model, output=FALSE}
+glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg, family = betabinomial)
+```
