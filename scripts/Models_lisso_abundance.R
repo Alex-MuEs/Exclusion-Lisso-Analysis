@@ -297,7 +297,7 @@ ggplot() +
 
 #### FIGURE WITHOUT FIELD 5 ####
 
-lisso_no5_summ_date <- Lisso_no5 %>% 
+lisso_no5_summ <- Lisso_no5 %>% 
   group_by(Field, Treatment) %>% 
   summarise(mean_dmg = mean(Abundance),
             sd = sd(Abundance, na.rm = TRUE),
@@ -306,7 +306,7 @@ lisso_no5_summ_date <- Lisso_no5 %>%
             .groups = "drop"
   )
 
-lisso_no5_emm_date <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment, type = "response")$emmeans)
+lisso_no5_emm <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment, type = "response")$emmeans)
 
 
 ggplot() +
@@ -317,12 +317,12 @@ ggplot() +
     alpha = 0.30, size = 2.5
   ) +
   geom_line(
-    data = lisso_no5_summ_date,
+    data = lisso_no5_summ,
     aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
     linewidth = 0.9, alpha = 0.5
   ) +
   geom_point(
-    data = lisso_no5_summ_date,
+    data = lisso_no5_summ,
     aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
     size = 4,
     alpha = 0.5
@@ -332,7 +332,7 @@ ggplot() +
   #Global emmean layer
   
   geom_line(
-    data = lisso_no5_emm_date,
+    data = lisso_no5_emm,
     aes(x = Treatment, y = rate, group = 1),
     inherit.aes = FALSE,
     linewidth = 1.6,
@@ -340,7 +340,7 @@ ggplot() +
   ) +
   
   geom_errorbar(
-    data = lisso_no5_emm_date,
+    data = lisso_no5_emm,
     aes(x = Treatment,
         ymin = rate-SE,
         ymax = rate+SE,
@@ -352,7 +352,7 @@ ggplot() +
   ) +
   
   geom_point(
-    data = lisso_no5_emm_date,
+    data = lisso_no5_emm,
     aes(x = Treatment, y = rate),
     inherit.aes = FALSE,
     size = 4.8,
@@ -366,5 +366,80 @@ ggplot() +
   labs(
     x = "Birds",
     y = "Abundancia de adultos",
+  ) +
+  theme_minimal(base_size = 14)
+
+#### FIGURE DATE WITHOUT FIELD 5 ####
+
+lisso.no5_summ_date <- Lisso_no5 %>% 
+  group_by(Field, Treatment, Date) %>% 
+  summarise(mean_dmg = mean(Abundance),
+            sd = sd(Abundance, na.rm = TRUE),
+            n = sum(!is.na(Abundance)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+
+lisso.no5_emm_date <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment|Date, type = "response")$emmeans)
+
+
+#Plot
+ggplot() +
+  geom_jitter(
+    data = Lisso_no5,
+    aes(x = Treatment, y = Abundance, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = lisso.no5_summ_date,
+    aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = lisso.no5_summ_date,
+    aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  facet_wrap(~Date) +
+  
+  #Global emmean layer
+  geom_line(
+    data = lisso.no5_emm_date,
+    aes(x = Treatment, y = rate, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = lisso.no5_emm_date,
+    aes(x = Treatment,
+        ymin = rate-SE,
+        ymax = rate+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = lisso.no5_emm_date,
+    aes(x = Treatment, y = rate),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Adult abundance",
   ) +
   theme_minimal(base_size = 14)
