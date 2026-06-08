@@ -13,7 +13,6 @@ library(emmeans)
 library(DHARMa)
 library(performance)
 library(car)
-library (visreg)
 here::i_am("docs/Results.qmd")
 ```
 
@@ -61,7 +60,8 @@ lisso_emm <- as.data.frame(emmeans(model.lisso, pairwise ~ Treatment, type = "re
 ggplot(lisso_emm, aes(x = Treatment, y = rate)) +
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
-  labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
+  labs(title = "Estimated Marginal Means of Adult Abundance by Treatment",
+       x = "Treatment", y = "Abundance") +
   theme_minimal()
 ```
 
@@ -74,7 +74,8 @@ lisso_emm.2 <- as.data.frame(emmeans(model.lisso, pairwise ~ Treatment|Date, typ
 ggplot(lisso_emm.2, aes(x = Date, y = rate, color = Treatment)) +
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
-  labs(x = "Date", y = "Estimated Marginal Mean of Abundance") +
+  labs(title = "Estimated Marginal Means of Adult Abundance by Treatment and Date",
+       x = "Date", y = "Abundance") +  
   theme_minimal()
 ```
 
@@ -235,7 +236,7 @@ ggplot() +
   theme_minimal(base_size = 14)
 ```
 
-------------------------------------------------------------------------
+
 
 ## Without field 5
 
@@ -274,7 +275,8 @@ lisso.no5_emm <- as.data.frame(emmeans(model.lisso.no5, pairwise ~ Treatment, ty
 ggplot(lisso.no5_emm, aes(x = Treatment, y = rate)) +
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
-  labs(x = "Treatment", y = "Estimated Marginal Mean of Abundance") +
+  labs(title = "Estimated Marginal Means of Adult Abundance by Treatment",
+       x = "Treatment", y = "Abundance") +
   theme_minimal()
 ```
 
@@ -287,7 +289,8 @@ lisso.no5_emm.2 <- as.data.frame(emmeans(model.lisso.no5, pairwise ~ Treatment|D
 ggplot(lisso.no5_emm.2, aes(x = Date, y = rate, color = Treatment)) +
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = rate-SE, ymax = rate+SE), width = 0.2) +
-  labs(x = "Date", y = "Estimated Marginal Mean of Abundance") +
+  labs(title = "Estimated Marginal Means of Adult Abundance by Treatment and Date",
+       x = "Date", y = "Abundance") +
   theme_minimal()
 ```
 
@@ -442,6 +445,8 @@ ggplot() +
 
 ------------------------------------------------------------------------
 
+
+
 # Leaf damage
 
 ## With field 5
@@ -462,4 +467,813 @@ model.leaf <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1
 
 ```{r Leaf model, output=FALSE}
 glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg, family = betabinomial)
+```
+
+**Summary:**
+
+```{r Leaf summary, echo=FALSE}
+summary(model.leaf)
+
+r2(model.leaf)
+
+Anova(model.leaf, type = 3)
+```
+
+**Model diagnostics:**
+
+```{r Leaf model diagnostics, echo=FALSE}
+dharma <- simulateResiduals(model.leaf, plot = T)
+```
+
+**Estimated marginal means plots:**
+
+Factor treatment
+
+```{r Leaf emmeans, echo=FALSE, message=FALSE}
+emmeans(model.leaf, pairwise~Treatment, type = "response")
+
+leaf_emm <- as.data.frame(emmeans(model.leaf, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(leaf_emm, aes(x = Treatment, y = prob)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = prob-SE, ymax = prob+SE), width = 0.2) +
+  labs(title = "Estimated Probability of Leaf Damage by Treatment",
+       x = "Treatment",
+       y = "Probability") + 
+  theme_minimal()
+```
+
+**Figure:**
+
+Factor treatment:
+
+```{r Leaf figure treatment, echo = FALSE}
+leaf_summ <- leaf_dmg %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_dmg = mean(Leaves_dmg_10leaves/10),
+            sd = sd(Leaves_dmg_10leaves/10, na.rm = TRUE),
+            n = sum(!is.na(Leaves_dmg_10leaves/10)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+ggplot() +
+  geom_jitter(
+    data = leaf_dmg,
+    aes(x = Treatment, y = Leaves_dmg_10leaves/10, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = leaf_summ,
+    aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = leaf_summ,
+    aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+#Global emmean layer
+  
+  geom_line(
+    data = leaf_emm,
+    aes(x = Treatment, y = prob, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = leaf_emm,
+    aes(x = Treatment,
+        ymin = prob-SE,
+        ymax = prob+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = leaf_emm,
+    aes(x = Treatment, y = prob),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Damaged leaves proportion",
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+## Without field 5
+
+```{r Leaf dataframe no-5, include=FALSE}
+leaf_dmg_no5 <- leaf_dmg %>% filter(Field != 5)
+
+model.leaf.no5 <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1|Field), data = leaf_dmg_no5, family = betabinomial)
+```
+
+**Summary:**
+
+```{r Leaf summary no-5, echo=FALSE}
+summary(model.leaf.no5)
+
+r2(model.leaf.no5)
+
+Anova(model.leaf.no5, type = 3)
+```
+
+**Model diagnostics:**
+
+```{r Leaf model diagnostics no-5, echo=FALSE}
+dharma <- simulateResiduals(model.leaf.no5, plot = T)
+```
+
+**Estimated marginal means plots:**
+
+Factor treatment
+
+```{r Leaf emmeans 1 no-5, echo=FALSE, message=FALSE}
+emmeans(model.leaf.no5, pairwise~Treatment, type = "response")
+
+leaf.no5_emm1 <- as.data.frame(emmeans(model.leaf.no5, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(leaf.no5_emm1, aes(x = Treatment, y = prob)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = prob-SE, ymax = prob+SE), width = 0.2) +
+  labs(title = "Estimated Probability of Leaf Damage by Treatment",
+       x = "Treatment",
+       y = "Probability") + 
+  theme_minimal()
+```
+
+Factor treatment*date
+
+```{r Leaf emmeans 2 no-5, echo=FALSE, message=FALSE}
+emmeans(model.leaf.no5, pairwise~Treatment|Date, type = "response")
+
+leaf.no5_emm2 <- as.data.frame(emmeans(model.leaf.no5, pairwise ~ Treatment|Date, type = "response")$emmeans)
+ggplot(leaf.no5_emm2, aes(x = Date, y = prob, color = Treatment)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = prob-SE, ymax = prob+SE), width = 0.2) +
+  labs(title = "Estimated Probability of Leaf Damage by Treatment and Date",
+       x = "Date",
+       y = "Probability") + 
+  theme_minimal()
+```
+
+**Figure:**
+
+Factor treatment:
+
+```{r Leaf figure treatment no-5, echo = FALSE}
+leaf.no5_summ <- leaf_dmg_no5 %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_dmg = mean(Leaves_dmg_10leaves/10),
+            sd = sd(Leaves_dmg_10leaves/10, na.rm = TRUE),
+            n = sum(!is.na(Leaves_dmg_10leaves/10)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+ggplot() +
+  geom_jitter(
+    data = leaf_dmg_no5,
+    aes(x = Treatment, y = Leaves_dmg_10leaves/10, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = leaf.no5_summ,
+    aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = leaf.no5_summ,
+    aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+#Global emmean layer
+  
+  geom_line(
+    data = leaf.no5_emm1,
+    aes(x = Treatment, y = prob, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = leaf.no5_emm1,
+    aes(x = Treatment,
+        ymin = prob-SE,
+        ymax = prob+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = leaf.no5_emm1,
+    aes(x = Treatment, y = prob),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Damaged leaves proportion",
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+Factor treatment*date
+
+```{r Leaf figure date no-5, echo = FALSE}
+leaf.no5_summ_date <- leaf_dmg_no5 %>% 
+  group_by(Field, Treatment,Date) %>% 
+  summarise(mean_dmg = mean(Leaves_dmg_10leaves/10),
+            sd = sd(Leaves_dmg_10leaves/10, na.rm = TRUE),
+            n = sum(!is.na(Leaves_dmg_10leaves/10)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+
+ggplot() +
+  geom_jitter(
+    data = leaf_dmg_no5,
+    aes(x = Treatment, y = Leaves_dmg_10leaves/10, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = leaf.no5_summ_date,
+    aes(x = Treatment, y = mean_dmg, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = leaf.no5_summ_date,
+    aes(x = Treatment, y = mean_dmg, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+  #Global emmean layer
+  
+  geom_line(
+    data = leaf.no5_emm2,
+    aes(x = Treatment, y = prob, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = leaf.no5_emm2,
+    aes(x = Treatment,
+        ymin = prob-SE,
+        ymax = prob+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = leaf.no5_emm2,
+    aes(x = Treatment, y = prob),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Damaged leaves proportion",
+  ) +
+  theme_minimal(base_size = 14) +
+  facet_wrap(~Date)
+```
+
+------------------------------------------------------------------------
+
+
+
+# Root biomass
+
+## With field 5
+
+```{r Root dataframe, include=FALSE}
+root <- read.csv2(here::here("data/original/Root_dmg_tot.csv")) %>% 
+        mutate(Date = as.POSIXct(Date),
+               Field = as.factor(Field),
+               Repeats = as.character(Repeats)) %>% 
+        filter(Treatment %in% c("BE", "FO"),
+               Date == "2025-06-30",
+               Root_weight < 3) %>% #Remove one outlier with weight value higher than 6
+        mutate(Treatment = as.factor(Treatment)) %>% 
+        select(-Observations)
+
+model.root <- glmmTMB(Root_weight ~ Treatment + (1|Field), data = root, family = Gamma (link = "log"))
+```
+
+**Model formula:**
+
+```{r Root model, output=FALSE}
+glmmTMB(Root_weight ~ Treatment + (1|Field), data = root, family = Gamma (link = "log"))
+```
+
+**Summary:**
+
+```{r Root summary, echo = FALSE}
+summary(model.root)
+
+r2(model.root)
+
+Anova(model.root, type = 2)
+```
+
+**Model diagnostics:**
+
+```{r Root model diagnostics, echo=FALSE}
+dharma <- simulateResiduals(model.root, plot = T)
+```
+
+**Estimated marginal means plots:**
+
+```{r Root emmeans, echo=FALSE, message=FALSE}
+emmeans(model.root, pairwise~Treatment, type = "response")
+
+root_emm <- as.data.frame(emmeans(model.root, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(root_emm, aes(x = Treatment, y = response)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = response-SE, ymax = response+SE), width = 0.2) +
+  labs(title = "Estimated Marginal Means of Root Biomass by Treatment",
+       x = "Treatment",
+       y = "Root biomass (g)") + 
+  theme_minimal()
+```
+
+**Figure:**
+
+```{r Root figure, echo = FALSE}
+root_summ <- root %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_weight = mean(Root_weight),
+            sd = sd(Root_weight, na.rm = TRUE),
+            n = sum(!is.na(Root_weight)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+ggplot() +
+  geom_jitter(
+    data = root,
+    aes(x = Treatment, y = Root_weight, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = root_summ,
+    aes(x = Treatment, y = mean_weight, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = root_summ,
+    aes(x = Treatment, y = mean_weight, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+  #Global emmean layer
+  
+  geom_line(
+    data = root_emm,
+    aes(x = Treatment, y = response, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = root_emm,
+    aes(x = Treatment,
+        ymin = response-SE,
+        ymax = response+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = root_emm,
+    aes(x = Treatment, y = response),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Root biomass (g)",
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+## Without field 5
+
+```{r Root dataframe no-5, include=FALSE}
+root_no5 <- root %>% filter(Field != "5")
+
+model.root.no5 <- glmmTMB(Root_weight ~ Treatment + (1|Field), data = root_no5, family = Gamma (link = "log"))
+```
+
+**Summary:**
+
+```{r Root summary no-5, echo = FALSE}
+summary(model.root.no5)
+
+r2(model.root.no5)
+
+Anova(model.root.no5, type = 2)
+```
+
+**Model diagnostics:**
+
+```{r Root model diagnostics no-5, echo=FALSE}
+dharma <- simulateResiduals(model.root.no5, plot = T)
+```
+
+**Estimated marginal means plots:**
+
+```{r Root emmeans no-5, echo=FALSE, message=FALSE}
+emmeans(model.root.no5, pairwise~Treatment, type = "response")
+
+root.no5_emm <- as.data.frame(emmeans(model.root.no5, pairwise ~ Treatment, type = "response")$emmeans)
+ggplot(root.no5_emm, aes(x = Treatment, y = response)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = response-SE, ymax = response+SE), width = 0.2) +
+  labs(title = "Estimated Marginal Means of Root Biomass by Treatment",
+       x = "Treatment",
+       y = "Root biomass (g)") + 
+  theme_minimal()
+```
+
+**Figure:**
+
+```{r Root figure no-5, echo = FALSE}
+root.no5_summ <- root_no5 %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_weight = mean(Root_weight),
+            sd = sd(Root_weight, na.rm = TRUE),
+            n = sum(!is.na(Root_weight)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+
+ggplot() +
+  geom_jitter(
+    data = root_no5,
+    aes(x = Treatment, y = Root_weight, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = root.no5_summ,
+    aes(x = Treatment, y = mean_weight, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = root.no5_summ,
+    aes(x = Treatment, y = mean_weight, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+  #Global emmean layer
+  
+  geom_line(
+    data = root.no5_emm,
+    aes(x = Treatment, y = response, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = root.no5_emm,
+    aes(x = Treatment,
+        ymin = response-SE,
+        ymax = response+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = root.no5_emm,
+    aes(x = Treatment, y = response),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Root biomass (g)",
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+------------------------------------------------------------------------
+
+
+
+# Yield
+
+## With field 5
+
+```{r Yield dataframe, include=FALSE}
+yield <- read_csv2(here::here("data/original/Yield.csv")) %>% 
+  mutate(Date = as.POSIXct(Date),
+         Field = as.factor(Field), 
+         Repeat = as.character(Repeat)) %>% 
+  rename(Yield = `Yield_kg/ha_HR14`) %>%
+  filter(Treatment %in% c("BE", "FO"))
+
+model.yield <- glmmTMB(Yield ~ Treatment + (1|Field), data = yield, family = Gamma (link = "log"))
+```
+
+**Model formula:**
+
+```{r Yield model, output=FALSE}
+glmmTMB(Yield ~ Treatment + (1|Field), data = yield, family = Gamma (link = "log"))
+```
+
+**Summary:**
+
+```{r Yield summary, echo = FALSE}
+summary(model.yield)
+
+r2(model.yield)
+
+Anova(model.yield)
+```
+
+**Model diagnostics:**
+
+```{r Yield model diagnostics, echo=FALSE}
+dharma <- simulateResiduals(model.yield, plot = T)
+```
+
+**Estimated marginal means plots:**
+
+```{r Yield emmeans, echo = FALSE, message = FALSE}
+emmeans(model.yield, pairwise ~ Treatment, type = "response")
+
+yield_emm <- as.data.frame(emmeans(model.yield, pairwise ~Treatment, type = "response")$emmeans)
+ggplot(yield_emm, aes(x = Treatment, y = response))+
+         geom_point(size = 2)+
+         geom_errorbar(aes(ymin = response-SE, ymax = response+SE, width = 0.2))+
+  labs(title = "Estimated Marginal Means of Yield by Treatment",
+       x = "Treatment",
+       y = "Yield (kg/ha)") +
+  theme_minimal()
+```
+
+**Figure:**
+
+```{r Figure yield, echo = FALSE}
+yield_summ <- yield %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_yield = mean(Yield),
+            sd = sd(Yield, na.rm = TRUE),
+            n = sum(!is.na(Yield)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+
+ggplot() +
+  geom_jitter(
+    data = yield,
+    aes(x = Treatment, y = Yield, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = yield_summ,
+    aes(x = Treatment, y = mean_yield, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = yield_summ,
+    aes(x = Treatment, y = mean_yield, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+#Global emmean layer
+  
+geom_line(
+  data = yield_emm,
+  aes(x = Treatment, y = response, group = 1),
+  inherit.aes = FALSE,
+  linewidth = 1.6,
+  color = "black"
+) +
+  
+  geom_errorbar(
+    data = yield_emm,
+    aes(x = Treatment,
+        ymin = response-SE,
+        ymax = response+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = yield_emm,
+    aes(x = Treatment, y = response),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Yield (kg/ha)",
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+## Without field 5
+
+```{r Yield dataframe no-5, include=FALSE}
+yield_no5 <- yield %>% 
+  filter(Field != "5")
+
+model.yield.no5 <- glmmTMB(Yield ~ Treatment + (1|Field), data = yield_no5, family = Gamma (link = "log"))
+```
+
+**Summary:**
+
+```{r Yield summary no-5, echo = FALSE}
+summary(model.yield.no5)
+
+r2(model.yield.no5)
+
+Anova(model.yield.no5)
+```
+
+**Model diagnostics:**
+
+```{r Yield model diagnostics no-5, echo=FALSE}
+dharma <- simulateResiduals(model.yield.no5, plot = T)
+```
+
+**Estimated marginal means plots:**
+
+```{r Yield emmeans no-5, echo = FALSE, message = FALSE}
+emmeans(model.yield.no5, pairwise ~ Treatment, type = "response")
+
+yield.no5_emm <- as.data.frame(emmeans(model.yield.no5, pairwise ~Treatment, type = "response")$emmeans)
+ggplot(yield.no5_emm, aes(x = Treatment, y = response))+
+         geom_point(size = 2)+
+         geom_errorbar(aes(ymin = response-SE, ymax = response+SE, width = 0.2))+
+  labs(title = "Estimated Marginal Means of Yield by Treatment",
+       x = "Treatment",
+       y = "Yield (kg/ha)") +
+  theme_minimal()
+```
+
+**Figure:**
+
+```{r Figure yield no-5, echo = FALSE}
+yield.no5_summ <- yield_no5 %>% 
+  group_by(Field, Treatment) %>% 
+  summarise(mean_yield = mean(Yield),
+            sd = sd(Yield, na.rm = TRUE),
+            n = sum(!is.na(Yield)),
+            se = sd / sqrt(n),
+            .groups = "drop"
+  )
+
+
+ggplot() +
+  geom_jitter(
+    data = yield_no5,
+    aes(x = Treatment, y = Yield, color = as.factor(Field)),
+    width = 0.07, height = 0,
+    alpha = 0.30, size = 2.5
+  ) +
+  geom_line(
+    data = yield.no5_summ,
+    aes(x = Treatment, y = mean_yield, group = as.factor(Field), color = as.factor(Field)),
+    linewidth = 0.9, alpha = 0.5
+  ) +
+  geom_point(
+    data = yield.no5_summ,
+    aes(x = Treatment, y = mean_yield, color = as.factor(Field)),
+    size = 4,
+    alpha = 0.5
+  ) +
+  
+  
+#Global emmean layer
+  
+  geom_line(
+    data = yield.no5_emm,
+    aes(x = Treatment, y = response, group = 1),
+    inherit.aes = FALSE,
+    linewidth = 1.6,
+    color = "black"
+  ) +
+  
+  geom_errorbar(
+    data = yield.no5_emm,
+    aes(x = Treatment,
+        ymin = response-SE,
+        ymax = response+SE,
+        group = 1),
+    inherit.aes = FALSE,
+    width = 0.08,
+    linewidth = 1.1,
+    color = "black"
+  ) +
+  
+  geom_point(
+    data = yield.no5_emm,
+    aes(x = Treatment, y = response),
+    inherit.aes = FALSE,
+    size = 4.8,
+    shape = 21,
+    fill = "white",
+    color = "black",
+    stroke = 1.2
+  ) +
+  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_color_manual(values = pal_cb, name = "Field") +
+  labs(
+    x = "Birds",
+    y = "Yield (kg/ha)",
+  ) +
+  theme_minimal(base_size = 14)
 ```

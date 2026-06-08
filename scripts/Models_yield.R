@@ -55,7 +55,7 @@ Anova(model_no5)
 emmeans(model_no5, pairwise ~ Treatment, type = "response")
 
 #Model diagnostics
-dharma_no5 <- simulateResiduals(model_no5, plot = T)
+dharma <- simulateResiduals(model_no5, plot = T)
 
 
 yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment, type = "response")$emmeans)
@@ -150,7 +150,7 @@ geom_line(
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
-    y = "Yield (Kg/ha)",
+    y = "Yield (kg/ha)",
   ) +
   theme_minimal(base_size = 14)
 
@@ -226,6 +226,6 @@ ggplot() +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = "Birds",
-    y = "Yield (Kg/ha)",
+    y = "Yield (kg/ha)",
   ) +
   theme_minimal(base_size = 14)

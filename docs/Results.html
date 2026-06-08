@@ -266,7 +266,6 @@ Tests are performed on the log scale </code></pre>
 </div>
 </div>
 </div>
-<hr>
 </section>
 <section id="without-field-5" class="level2">
 <h2 class="anchored" data-anchor-id="without-field-5">Without field 5</h2>
@@ -421,10 +420,653 @@ Tests are performed on the log scale </code></pre>
 </div>
 </div>
 </div>
+<hr>
 </section>
 </section>
 <section id="leaf-damage" class="level1">
 <h1>Leaf damage</h1>
+<section id="with-field-5-1" class="level2">
+<h2 class="anchored" data-anchor-id="with-field-5-1">With field 5</h2>
+<p><strong>Model formula:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glmmTMB</span>(<span class="fu">cbind</span>(Leaves_dmg_10leaves, No_dmg) <span class="sc">~</span> Treatment <span class="sc">*</span> Date <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Field), <span class="at">data =</span> leaf_dmg, <span class="at">family =</span> betabinomial)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Summary:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: betabinomial  ( logit )
+Formula:          cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1 |  
+    Field)
+Data: leaf_dmg
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1036.2    1071.3    -508.1    1016.2       236 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Field  (Intercept) 0.1819   0.4265  
+Number of obs: 246, groups:  Field, 5
+
+Dispersion parameter for betabinomial family (): 8.47 
+
+Conditional model:
+                           Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                 -0.5083     0.2549  -1.994 0.046121 *  
+TreatmentFO                 -0.4039     0.2464  -1.639 0.101189    
+Date2025-06-11               0.3382     0.2350   1.439 0.150210    
+Date2025-06-23              -0.9823     0.2643  -3.717 0.000202 ***
+Date2025-07-16               0.6215     0.2354   2.640 0.008279 ** 
+TreatmentFO:Date2025-06-11   0.2568     0.3326   0.772 0.439963    
+TreatmentFO:Date2025-06-23   0.3914     0.3791   1.032 0.301840    
+TreatmentFO:Date2025-07-16   0.3731     0.3384   1.103 0.270163    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.769
+     Marginal R2: 0.512</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type III Wald chisquare tests)
+
+Response: cbind(Leaves_dmg_10leaves, No_dmg)
+                 Chisq Df Pr(&gt;Chisq)    
+(Intercept)     3.9772  1    0.04612 *  
+Treatment       2.6867  1    0.10119    
+Date           40.7689  3   7.32e-09 ***
+Treatment:Date  1.5539  3    0.66988    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p><strong>Model diagnostics:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20model%20diagnostics-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Estimated marginal means plots:</strong></p>
+<p>Factor treatment</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Treatment  prob     SE  df asymp.LCL asymp.UCL
+ BE        0.374 0.0492 Inf     0.284     0.474
+ FO        0.340 0.0473 Inf     0.254     0.438
+
+Results are averaged over the levels of: Date 
+Confidence level used: 0.95 
+Intervals are back-transformed from the logit scale 
+
+$contrasts
+ contrast odds.ratio    SE  df null z.ratio p.value
+ BE / FO        1.16 0.144 Inf    1   1.194  0.2325
+
+Results are averaged over the levels of: Date 
+Tests are performed on the log odds ratio scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20emmeans-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Figure:</strong></p>
+<p>Factor treatment:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20figure%20treatment-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="without-field-5-1" class="level2">
+<h2 class="anchored" data-anchor-id="without-field-5-1">Without field 5</h2>
+<p><strong>Summary:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: betabinomial  ( logit )
+Formula:          cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment * Date + (1 |  
+    Field)
+Data: leaf_dmg_no5
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    826.7     859.6    -403.4     806.7       188 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Field  (Intercept) 0.2199   0.4689  
+Number of obs: 198, groups:  Field, 4
+
+Dispersion parameter for betabinomial family (): 9.68 
+
+Conditional model:
+                           Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                -0.17254    0.29564  -0.584   0.5595    
+TreatmentFO                -0.54169    0.26302  -2.060   0.0394 *  
+Date2025-06-11             -0.09023    0.25323  -0.356   0.7216    
+Date2025-06-23             -1.40381    0.29006  -4.840  1.3e-06 ***
+Date2025-07-16              0.50650    0.25548   1.983   0.0474 *  
+TreatmentFO:Date2025-06-11  0.44629    0.35663   1.251   0.2108    
+TreatmentFO:Date2025-06-23  0.44038    0.41619   1.058   0.2900    
+TreatmentFO:Date2025-07-16  0.37133    0.36727   1.011   0.3120    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.834
+     Marginal R2: 0.571</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type III Wald chisquare tests)
+
+Response: cbind(Leaves_dmg_10leaves, No_dmg)
+                 Chisq Df Pr(&gt;Chisq)    
+(Intercept)     0.3406  1    0.55948    
+Treatment       4.2417  1    0.03944 *  
+Date           44.0906  3  1.444e-09 ***
+Treatment:Date  1.9311  3    0.58682    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p><strong>Model diagnostics:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20model%20diagnostics%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Estimated marginal means plots:</strong></p>
+<p>Factor treatment</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Treatment  prob     SE  df asymp.LCL asymp.UCL
+ BE        0.397 0.0607 Inf     0.286     0.519
+ FO        0.344 0.0573 Inf     0.242     0.463
+
+Results are averaged over the levels of: Date 
+Confidence level used: 0.95 
+Intervals are back-transformed from the logit scale 
+
+$contrasts
+ contrast odds.ratio    SE  df null z.ratio p.value
+ BE / FO        1.26 0.171 Inf    1   1.665  0.0959
+
+Results are averaged over the levels of: Date 
+Tests are performed on the log odds ratio scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20emmeans%201%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Factor treatment*date</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+Date = 2025-05-28:
+ Treatment  prob     SE  df asymp.LCL asymp.UCL
+ BE        0.457 0.0734 Inf    0.3204     0.600
+ FO        0.329 0.0668 Inf    0.2128     0.470
+
+Date = 2025-06-11:
+ Treatment  prob     SE  df asymp.LCL asymp.UCL
+ BE        0.435 0.0723 Inf    0.3016     0.578
+ FO        0.411 0.0691 Inf    0.2854     0.550
+
+Date = 2025-06-23:
+ Treatment  prob     SE  df asymp.LCL asymp.UCL
+ BE        0.171 0.0464 Inf    0.0982     0.282
+ FO        0.157 0.0438 Inf    0.0890     0.263
+
+Date = 2025-07-16:
+ Treatment  prob     SE  df asymp.LCL asymp.UCL
+ BE        0.583 0.0720 Inf    0.4386     0.714
+ FO        0.541 0.0736 Inf    0.3971     0.678
+
+Confidence level used: 0.95 
+Intervals are back-transformed from the logit scale 
+
+$contrasts
+Date = 2025-05-28:
+ contrast odds.ratio    SE  df null z.ratio p.value
+ BE / FO        1.72 0.452 Inf    1   2.060  0.0394
+
+Date = 2025-06-11:
+ contrast odds.ratio    SE  df null z.ratio p.value
+ BE / FO        1.10 0.265 Inf    1   0.396  0.6923
+
+Date = 2025-06-23:
+ contrast odds.ratio    SE  df null z.ratio p.value
+ BE / FO        1.11 0.357 Inf    1   0.314  0.7537
+
+Date = 2025-07-16:
+ contrast odds.ratio    SE  df null z.ratio p.value
+ BE / FO        1.19 0.304 Inf    1   0.664  0.5065
+
+Tests are performed on the log odds ratio scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20emmeans%202%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Figure:</strong></p>
+<p>Factor treatment:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20figure%20treatment%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Factor treatment*date</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Leaf%20figure%20date%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="root-biomass" class="level1">
+<h1>Root biomass</h1>
+<section id="with-field-5-2" class="level2">
+<h2 class="anchored" data-anchor-id="with-field-5-2">With field 5</h2>
+<p><strong>Model formula:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glmmTMB</span>(Root_weight <span class="sc">~</span> Treatment <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Field), <span class="at">data =</span> root, <span class="at">family =</span> <span class="fu">Gamma</span> (<span class="at">link =</span> <span class="st">"log"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Summary:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: Gamma  ( log )
+Formula:          Root_weight ~ Treatment + (1 | Field)
+Data: root
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    405.6     420.4    -198.8     397.6       293 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Field  (Intercept) 0.01637  0.128   
+Number of obs: 297, groups:  Field, 5
+
+Dispersion estimate for Gamma family (sigma^2): 0.293 
+
+Conditional model:
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept) -0.02627    0.07307  -0.360    0.719
+TreatmentFO -0.03149    0.06333  -0.497    0.619</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.061
+     Marginal R2: 0.001</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: Root_weight
+           Chisq Df Pr(&gt;Chisq)
+Treatment 0.2473  1      0.619</code></pre>
+</div>
+</div>
+<p><strong>Model diagnostics:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Root%20model%20diagnostics-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Estimated marginal means plots:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Treatment response     SE  df asymp.LCL asymp.UCL
+ BE           0.974 0.0712 Inf     0.844      1.12
+ FO           0.944 0.0680 Inf     0.820      1.09
+
+Confidence level used: 0.95 
+Intervals are back-transformed from the log scale 
+
+$contrasts
+ contrast ratio     SE  df null z.ratio p.value
+ BE / FO   1.03 0.0654 Inf    1   0.497  0.6190
+
+Tests are performed on the log scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Root%20emmeans-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Figure:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Root%20figure-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="without-field-5-2" class="level2">
+<h2 class="anchored" data-anchor-id="without-field-5-2">Without field 5</h2>
+<p><strong>Summary:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: Gamma  ( log )
+Formula:          Root_weight ~ Treatment + (1 | Field)
+Data: root_no5
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    344.5     358.4    -168.3     336.5       232 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Field  (Intercept) 0.0127   0.1127  
+Number of obs: 236, groups:  Field, 4
+
+Dispersion estimate for Gamma family (sigma^2): 0.296 
+
+Conditional model:
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept) -0.04389    0.07614  -0.577    0.564
+TreatmentFO  0.08032    0.07091   1.133    0.257</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.052
+     Marginal R2: 0.006</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: Root_weight
+           Chisq Df Pr(&gt;Chisq)
+Treatment 1.2831  1     0.2573</code></pre>
+</div>
+</div>
+<p><strong>Model diagnostics:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Root%20model%20diagnostics%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Estimated marginal means plots:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Treatment response     SE  df asymp.LCL asymp.UCL
+ BE           0.957 0.0729 Inf     0.824      1.11
+ FO           1.037 0.0775 Inf     0.896      1.20
+
+Confidence level used: 0.95 
+Intervals are back-transformed from the log scale 
+
+$contrasts
+ contrast ratio     SE  df null z.ratio p.value
+ BE / FO  0.923 0.0654 Inf    1  -1.133  0.2573
+
+Tests are performed on the log scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Root%20emmeans%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Figure:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Root%20figure%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="yield" class="level1">
+<h1>Yield</h1>
+<section id="with-field-5-3" class="level2">
+<h2 class="anchored" data-anchor-id="with-field-5-3">With field 5</h2>
+<p><strong>Model formula:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glmmTMB</span>(Yield <span class="sc">~</span> Treatment <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Field), <span class="at">data =</span> yield, <span class="at">family =</span> <span class="fu">Gamma</span> (<span class="at">link =</span> <span class="st">"log"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Summary:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: Gamma  ( log )
+Formula:          Yield ~ Treatment + (1 | Field)
+Data: yield
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    662.2     668.9    -327.1     654.2        36 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Field  (Intercept) 0.002873 0.0536  
+Number of obs: 40, groups:  Field, 5
+
+Dispersion estimate for Gamma family (sigma^2): 0.00872 
+
+Conditional model:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  9.02896    0.03180  283.92   &lt;2e-16 ***
+TreatmentFO  0.04482    0.02955    1.52    0.129    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.281
+     Marginal R2: 0.043</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: Yield
+           Chisq Df Pr(&gt;Chisq)
+Treatment 2.2999  1     0.1294</code></pre>
+</div>
+</div>
+<p><strong>Model diagnostics:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Yield%20model%20diagnostics-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Estimated marginal means plots:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Treatment response  SE  df asymp.LCL asymp.UCL
+ BE            8341 265 Inf      7837      8878
+ FO            8724 277 Inf      8197      9284
+
+Confidence level used: 0.95 
+Intervals are back-transformed from the log scale 
+
+$contrasts
+ contrast ratio     SE  df null z.ratio p.value
+ BE / FO  0.956 0.0283 Inf    1  -1.517  0.1294
+
+Tests are performed on the log scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Yield%20emmeans-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Figure:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Figure%20yield-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="without-field-5-3" class="level2">
+<h2 class="anchored" data-anchor-id="without-field-5-3">Without field 5</h2>
+<p><strong>Summary:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: Gamma  ( log )
+Formula:          Yield ~ Treatment + (1 | Field)
+Data: yield_no5
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    517.8     523.6    -254.9     509.8        28 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Field  (Intercept) 0.004198 0.06479 
+Number of obs: 32, groups:  Field, 4
+
+Dispersion estimate for Gamma family (sigma^2): 0.00528 
+
+Conditional model:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  9.00730    0.03715  242.48   &lt;2e-16 ***
+TreatmentFO  0.07578    0.02570    2.95   0.0032 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.519
+     Marginal R2: 0.135</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: Yield
+           Chisq Df Pr(&gt;Chisq)   
+Treatment 8.6911  1   0.003198 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p><strong>Model diagnostics:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Yield%20model%20diagnostics%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Estimated marginal means plots:</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ Treatment response  SE  df asymp.LCL asymp.UCL
+ BE            8162 303 Inf      7589      8779
+ FO            8805 327 Inf      8187      9470
+
+Confidence level used: 0.95 
+Intervals are back-transformed from the log scale 
+
+$contrasts
+ contrast ratio     SE  df null z.ratio p.value
+ BE / FO  0.927 0.0238 Inf    1  -2.948  0.0032
+
+Tests are performed on the log scale </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Yield%20emmeans%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Figure:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_files/figure-html/Figure%20yield%20no-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 </main>
