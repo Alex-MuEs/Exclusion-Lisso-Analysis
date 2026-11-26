@@ -94,7 +94,7 @@ pal_cb <- c(
 )
 
 
-ggplot() +
+yield_plot <- ggplot() +
   geom_jitter(
     data = Yield,
     aes(x = Treatment, y = Yield, color = as.factor(Field)),
@@ -146,14 +146,18 @@ geom_line(
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Yield (kg/ha)",
+    x = NULL,
+    y = "Yield",
   ) +
   theme_minimal(base_size = 14)
 
+print(yield_plot)
+ggsave("plots/Yield per Treatment.svg", plot = yield_plot,
+       width = 7.03125, height = 6.25, units = "in")
 
 
 #### Figure without field 5 data ####
@@ -170,7 +174,7 @@ yieldno5_summ <- Yield_no5 %>%
 yieldno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~Treatment, type = "response")$emmeans)
 
 
-ggplot() +
+yield_no5_plot <- ggplot() +
   geom_jitter(
     data = Yield_no5,
     aes(x = Treatment, y = Yield, color = as.factor(Field)),
@@ -222,10 +226,15 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Yield (kg/ha)",
+    x = NULL,
+    y = "Yield",
   ) +
   theme_minimal(base_size = 14)
+
+print(yield_no5_plot)
+ggsave("plots/Yield per Treatment (no 5).svg", plot = yield_no5_plot,
+       width = 7.03125, height = 6.25, units = "in")
