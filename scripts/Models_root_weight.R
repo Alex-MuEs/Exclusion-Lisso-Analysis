@@ -111,7 +111,7 @@ pal_cb <- c(
 )
 
 
-ggplot() +
+root_biomass_plot <- ggplot() +
   geom_jitter(
     data = root,
     aes(x = Treatment, y = Root_weight, color = as.factor(Field)),
@@ -163,14 +163,18 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Root weight (g)",
+    x = NULL,
+    y = "Root biomass (g)",
   ) +
   theme_minimal(base_size = 14)
 
+print(root_biomass_plot)
+ggsave("plots/Root weight per Treatment.svg", plot = root_biomass_plot,
+       width = 7.03125, height = 6.25, units = "in")
 
 #### Figure without field 5 data ####
 
@@ -186,7 +190,7 @@ rootno5_summ <- root_no5 %>%
 rootno5_emm <- as.data.frame(emmeans(model_no5, pairwise ~ Treatment, type ="response")$emmeans)
 
 
-ggplot() +
+root_biomass_no5_plot <- ggplot() +
   geom_jitter(
     data = root_no5,
     aes(x = Treatment, y = Root_weight, color = as.factor(Field)),
@@ -238,10 +242,15 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Root weight (g)",
+    x = NULL,
+    y = "Root biomass (g)",
   ) +
   theme_minimal(base_size = 14)
+
+print(root_biomass_no5_plot)
+ggsave("plots/Root weight per Treatment (no 5).svg", plot = root_biomass_no5_plot,
+       width = 7.03125, height = 6.25, units = "in")
