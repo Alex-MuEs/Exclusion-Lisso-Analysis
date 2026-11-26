@@ -1,9 +1,9 @@
 Field;Genus;Species;Presence;Indep_Observations;Nights_Elapsed;Abundance_Index;;;;;Abundance;Richness;Shannon;Abundance_insectiv;Richness_insectiv;Shannon_insectiv
-1;Ardea;cinerea;-;0;50;0;;;;P1;236;9;1,15;180;3;0,496
-1;Ardea;sp;X;1;50;2;;;;P2;260;6;1,08;110;2;0,225
-1;Bubulcus;ibis;X;2;50;4;;;;P3;168;10;1,64;64;4;0,567
-1;Burhinus;oedicnemus;-;0;50;0;;;;P4;310;9;0,824;238;4;0,949
-1;Chroicocephalus;genei;-;0;50;0;;;;P5;124;9;0,676;86;4;0,477
+1;Ardea;cinerea;-;0;50;0;;;;P1;118;9;1,15;90;3;0,496
+1;Ardea;sp;X;1;50;2;;;;P2;130;6;1,08;55;2;0,225
+1;Bubulcus;ibis;X;2;50;4;;;;P3;84;10;1,64;32;4;0,567
+1;Burhinus;oedicnemus;-;0;50;0;;;;P4;155;9;0,824;119;4;0,949
+1;Chroicocephalus;genei;-;0;50;0;;;;P5;62;9;0,676;43;4;0,477
 1;Chroicocephalus;ridibundus;X;21;50;42;;;;;;;;;;
 1;Circus;aeruginosus;X;1;50;2;;;;;;;;;;
 1;Egretta;garzetta;-;0;50;0;;;;;;;;;;
