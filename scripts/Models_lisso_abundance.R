@@ -155,7 +155,7 @@ pal_cb <- c(
 )
 
 
-ggplot() +
+adult_abundance_plot <- ggplot() +
   geom_jitter(
     data = Lisso,
     aes(x = Treatment, y = Abundance, color = as.factor(Field)),
@@ -207,15 +207,18 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Adult abundance",
+    x = NULL,
+    y = "Adult weevil abundance",
   ) +
   theme_minimal(base_size = 14)
 
-
+print(adult_abundance_plot)
+ggsave("plots/Adult abundance per treatment.svg", plot = adult_abundance_plot,
+       width = 7.03125, height = 6.25, units = "in")
 
 #### FIGURE DATE ####
 
@@ -231,7 +234,7 @@ lisso_summ_date <- Lisso %>%
 lisso_emm_date <- as.data.frame(emmeans(model.poi, pairwise ~ Treatment|Date, type = "response")$emmeans)
 
 
-ggplot() +
+adult_abundance_by_date_plot <- ggplot() +
   geom_jitter(
     data = Lisso,
     aes(x = Treatment, y = Abundance, color = as.factor(Field)),
@@ -284,14 +287,18 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Abundancia de adultos",
+    x = NULL,
+    y = "Adult weevil abundance",
   ) +
   theme_minimal(base_size = 14)
 
+print(adult_abundance_by_date_plot)
+ggsave("plots/Adult abundance per Treatment and date.svg", plot = adult_abundance_by_date_plot,
+       width = 8.5, height = 6.25, units = "in")
 
 
 
@@ -309,7 +316,7 @@ lisso_no5_summ <- Lisso_no5 %>%
 lisso_no5_emm <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment, type = "response")$emmeans)
 
 
-ggplot() +
+adult_abundance_no5_plot <- ggplot() +
   geom_jitter(
     data = Lisso_no5,
     aes(x = Treatment, y = Abundance, color = as.factor(Field)),
@@ -361,13 +368,18 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Abundancia de adultos",
+    x = NULL,
+    y = "Adult weevil abundance",
   ) +
   theme_minimal(base_size = 14)
+
+print(adult_abundance_no5_plot)
+ggsave("plots/Adult abundance per treatment (no 5).svg", plot = adult_abundance_no5_plot,
+       width = 7.03125, height = 6.25, units = "in")
 
 #### FIGURE DATE WITHOUT FIELD 5 ####
 
@@ -385,7 +397,7 @@ lisso.no5_emm_date <- as.data.frame(emmeans(model.poi_no5, pairwise ~ Treatment|
 
 
 #Plot
-ggplot() +
+adult_abundance_by_date_no5_plot <- ggplot() +
   geom_jitter(
     data = Lisso_no5,
     aes(x = Treatment, y = Abundance, color = as.factor(Field)),
@@ -436,10 +448,16 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Adult abundance",
+    x = NULL,
+    y = "Adult weevil abundance",
   ) +
   theme_minimal(base_size = 14)
+
+print(adult_abundance_by_date_no5_plot)
+ggsave("plots/Adult abundance per Treatment and date (no 5).svg",
+       plot = adult_abundance_by_date_no5_plot,
+       width = 8.5, height = 6.25, units = "in")

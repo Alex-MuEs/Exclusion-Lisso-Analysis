@@ -29,12 +29,11 @@ leaf_dmg <- read.csv2("data/original/leaf_dmg.csv") %>%
 
 leaf_dmg <- leaf_dmg %>%
   mutate(No_dmg = 10 - Leaves_dmg_10leaves) %>% 
-  #mutate(julian_day = yday(Date)) %>% 
   filter(Treatment %in% c("BE", "FO"))
 
 
 #### LMM binomial ####
-model <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + julian_day + (1|Field), data = leaf_dmg, family = binomial)
+model <- glmmTMB(cbind(Leaves_dmg_10leaves, No_dmg) ~ Treatment + Date + (1|Field), data = leaf_dmg, family = binomial)
 summary(model)
 r2(model)
 
@@ -158,7 +157,7 @@ pal_cb <- c(
 )
 
 
-ggplot() +
+leaf_damage_plot <- ggplot() +
   geom_jitter(
     data = leaf_dmg,
     aes(x = Treatment, y = Leaves_dmg_10leaves/10, color = as.factor(Field)),
@@ -210,16 +209,19 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Proporción de hojas dañadas",
+    x = NULL,
+    y = "Proportion of damaged leaves",
   ) +
-  theme_minimal(base_size = 14)+
+  theme_minimal(base_size = 14) +
   facet_wrap(~Date)
 
-
+print(leaf_damage_plot)
+ggsave("plots/Leaf dmg per Treatment.svg", plot = leaf_damage_plot,
+       width = 7.03125, height = 6.25, units = "in")
 
 #### Figure without field 5 data ####
 
@@ -235,7 +237,7 @@ leafno5_summ <- leaf_dmg_no5 %>%
 leafno5_emm <- as.data.frame(emmeans(model_no5.2, pairwise ~ Treatment|Date, type = "response")$emmeans)
 
 
-ggplot() +
+leaf_damage_no5_plot <- ggplot() +
   geom_jitter(
     data = leaf_dmg_no5,
     aes(x = Treatment, y = Leaves_dmg_10leaves/10, color = as.factor(Field)),
@@ -287,11 +289,16 @@ ggplot() +
     color = "black",
     stroke = 1.2
   ) +
-  scale_x_discrete(labels = c("BE" = "No", "FO" = "Yes")) +
+  scale_x_discrete(labels = c("BE" = "Exclusion", "FO" = "Control")) +
+  theme(axis.text.x = element_text(face = "bold", size = 16)) +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
-    x = "Birds",
-    y = "Proporción de hojas dañadas",
+    x = NULL,
+    y = "Proportion of damaged leaves",
   ) +
   theme_minimal(base_size = 14) +
   facet_wrap(~Date)
+
+print(leaf_damage_no5_plot)
+ggsave("plots/Leaf dmg per Treatment (no 5).svg", plot = leaf_damage_no5_plot,
+       width = 7.03125, height = 6.25, units = "in")
