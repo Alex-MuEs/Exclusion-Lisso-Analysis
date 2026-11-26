@@ -151,7 +151,7 @@ geom_line(
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = NULL,
-    y = "Yield",
+    y = "Yield (kg/ha)",
   ) +
   theme_minimal(base_size = 14)
 
@@ -231,7 +231,7 @@ yield_no5_plot <- ggplot() +
   scale_color_manual(values = pal_cb, name = "Field") +
   labs(
     x = NULL,
-    y = "Yield",
+    y = "Yield (kg/ha)",
   ) +
   theme_minimal(base_size = 14)
 
